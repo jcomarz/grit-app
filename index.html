@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1A1A1A">
+<title>GR!T — Intense Fellowship</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#1A1A1A;--s:#242424;--sa:#2E2E2E;--a:#D94F3B;--ah:#E8664F;--ad:rgba(217,79,59,.12);--t:#F0EFED;--tm:#9E9C98;--td:#6B6965;--b:#3A3A3A;--ok:#4CAF50;--w:#FF9800;--r:12px}
+html.light{--bg:#F5F3F0;--s:#FFFFFF;--sa:#EDE9E4;--a:#C4432F;--ah:#D94F3B;--ad:rgba(196,67,47,.1);--t:#1A1A1A;--tm:#6B6965;--td:#9E9C98;--b:#DDD8D2;--ok:#388E3C;--w:#E68A00}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t);-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+#app{height:100%;overflow:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--b);border-radius:2px}
+input,textarea,select,button{font-family:inherit;color:var(--t)}a{color:var(--a)}
+.pg{flex:1;overflow-y:auto;padding:16px 14px 76px;-webkit-overflow-scrolling:touch}.pi{max-width:560px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--s);border-top:1px solid var(--b);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:0;border:0;color:var(--td);font-size:9px;font-weight:600;cursor:pointer;transition:color .2s;padding:4px 2px}
+nav button.act{color:var(--a)}nav button .mi{font-size:21px}
+.cd{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:14px;transition:all .2s;margin-bottom:8px}
+.bt{background:var(--a);color:#fff;border:0;border-radius:8px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.bt:hover{background:var(--ah)}.bg{background:0;border:1px solid var(--b);color:var(--tm)}.bg:hover{border-color:var(--a);color:var(--a);background:var(--ad)}
+.bs{padding:5px 12px;font-size:11px}
+.ip{background:var(--sa);border:1px solid var(--b);border-radius:8px;padding:9px 12px;color:var(--t);font-size:13px;width:100%;outline:0;transition:border-color .2s,background .3s}.ip:focus{border-color:var(--a)}
+textarea.ip{resize:vertical;min-height:56px}
+.tg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;background:var(--ad);color:var(--a);cursor:pointer;transition:all .15s;user-select:none}.tg.on{background:var(--a);color:#fff}
+.st{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--a);margin-bottom:12px}
+.sb{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;margin-bottom:8px}
+.lb{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--tm);margin-bottom:5px}
+.pl{display:flex;gap:3px;margin-bottom:12px}.pl>*{flex:1;text-align:center;padding:7px 4px;font-size:11px;font-weight:600;border-radius:8px;cursor:pointer;transition:all .15s;border:1px solid var(--b);background:0;color:var(--tm)}.pl>.on{background:var(--a);color:#fff;border-color:var(--a)}
+.chk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;transition:all .15s;background:var(--s);border:1px solid var(--b);margin-bottom:5px}.chk.dn{background:var(--ad);border-color:var(--a)}
+.dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:2px solid var(--b);display:flex;align-items:center;justify-content:center;transition:all .2s}.chk.dn .dot{border-color:var(--a);background:var(--a)}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cc{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:12px;transition:all .15s;border:1px solid transparent}.cc.today{border-color:var(--a)}.cc.sel{background:var(--a);color:#fff}
+.sr{display:flex;gap:2px}.sb2{flex:1;padding:5px 0;font-size:10px;font-weight:600;border:0;border-radius:4px;cursor:pointer;background:var(--sa);color:var(--td);transition:all .15s;font-family:inherit}.sb2.on{background:var(--a);color:#fff}
+.ring{transform:rotate(-90deg)}
+.cs{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}.ac{max-width:380px;width:100%}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;color:var(--a)}.lsub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--tm);margin-top:-4px}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.fu{animation:fu .3s ease-out both}.f1{animation-delay:.04s}.f2{animation-delay:.08s}.f3{animation-delay:.12s}.f4{animation-delay:.16s}
+.vc{border-left:3px solid;padding:10px 10px 10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;background:var(--s);transition:background .3s}
+.vc.red{border-color:#D94F3B}.vc.gold{border-color:#FF9800}.vc.blue{border-color:#4A90D9}.vc.green{border-color:#4CAF50}.vc.purple{border-color:#9C27B0}
+.cdot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}.cdot.on{border-color:var(--t);transform:scale(1.2)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--s);border-radius:16px 16px 0 0;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:20px 16px env(safe-area-inset-bottom,20px)}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;color:var(--a);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.plan-day{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b)}.plan-day:last-child{border-bottom:0}
+.sql-box{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:10px;font-family:'Courier New',monospace;font-size:9px;color:var(--tm);white-space:pre-wrap;word-break:break-all;max-height:140px;overflow-y:auto;line-height:1.4;user-select:all}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--b);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--a)}.toggle::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}.toggle.on::after{left:22px}
+.ml{height:220px;overflow-y:auto;padding:10px}.mb{max-width:80%;padding:7px 11px;border-radius:12px;font-size:12px;margin-bottom:6px}
+.mm{margin-left:auto;background:var(--a);color:#fff;border-bottom-right-radius:2px}.mo{background:var(--sa);border-bottom-left-radius:2px}
+.hint{background:var(--ad);border:1px dashed var(--a);border-radius:var(--r);padding:14px;margin-bottom:10px;text-align:center}
+.hint-icon{font-size:28px;margin-bottom:6px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.room-code{font-family:'Courier New',monospace;font-size:16px;font-weight:700;letter-spacing:2px;color:var(--a);background:var(--sa);padding:8px 16px;border-radius:8px;text-align:center;user-select:all;word-break:break-all}
+.brother-card{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r);background:var(--sa);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.brother-card:hover{background:var(--ad);border-color:var(--a)}
+canvas{display:none}
+.mini-player{position:fixed;bottom:60px;left:0;right:0;z-index:90;background:var(--s);border-top:1px solid var(--b);transition:transform .3s,opacity .3s;padding-bottom:env(safe-area-inset-bottom,0)}
+.mini-player.hidden{transform:translateY(100%);opacity:0;pointer-events:none}
+.mp-bar{display:flex;align-items:center;gap:8px;padding:6px 12px}
+.mp-art{width:36px;height:36px;border-radius:6px;background:var(--ad);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.mp-info{flex:1;min-width:0}.mp-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mp-cat{font-size:9px;color:var(--tm)}
+.mp-expand{position:fixed;bottom:60px;left:0;right:0;z-index:89;background:var(--s);border-top:1px solid var(--b);border-radius:16px 16px 0 0;max-height:70vh;overflow:hidden;transition:transform .3s}
+.mp-expand.hidden{transform:translateY(110%)}
+.vsearch-results{max-height:200px;overflow-y:auto;margin-top:6px}
+.vsearch-item{padding:8px;border-radius:6px;cursor:pointer;margin-bottom:4px;border:1px solid var(--b);transition:all .15s}
+.vsearch-item:hover{border-color:var(--a);background:var(--ad)}
+.plan-tmpl{border:1px solid var(--b);border-radius:var(--r);padding:12px;margin-bottom:6px;cursor:pointer;transition:all .15s;background:var(--s)}
+.plan-tmpl:hover{border-color:var(--a);background:var(--ad)}
+.plan-tmpl-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:8px;font-weight:600;background:var(--ad);color:var(--a)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<canvas id="vc" width="1080" height="1080"></canvas>
+<script>
+// ═══════════════════
+// CONSTANTS
+// ═══════════════════
+const PILLARS=[{key:'spiritual',label:'Spiritual Discipline',icon:'✝️'},{key:'leadership',label:'Leadership & Purpose',icon:'⚡'},{key:'brotherhood',label:'Brotherhood',icon:'🤝'},{key:'resilience',label:'Resilience',icon:'🔥'}];
+const WEEKLY=[{day:'Sun',f:'Review + worship'},{day:'Mon',f:"Set week's focus"},{day:'Tue',f:'Leadership act'},{day:'Wed',f:'Brotherhood check-in'},{day:'Thu',f:'Resilience day'},{day:'Fri',f:'Serve someone'},{day:'Sat',f:'Rest & restore'}];
+const VCATS='promise,conviction,encouragement,instruction,prayer,praise,general'.split(',');
+const VCOLS='red,gold,blue,green,purple'.split(',');
+const CHEX={red:'#D94F3B',gold:'#FF9800',blue:'#4A90D9',green:'#4CAF50',purple:'#9C27B0'};
+const TAGS='prayer,scripture,leadership,brotherhood,resilience,gratitude,service,growth,confession,victory,struggle,family,work,worship'.split(',');
+const PLCATS='worship,morning,resilience,rest,focus,prayer,custom'.split(',');
+const DS='Sun,Mon,Tue,Wed,Thu,Fri,Sat'.split(',');
+const dk=d=>d.toISOString().split('T')[0],TD=()=>dk(new Date()),DOW=k=>DS[new Date(k+'T12:00:00').getDay()],ID=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const BUILT_IN=[
+{ref:'Joshua 1:9',text:'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.',tags:['courage','strength'],pillar:'resilience'},
+{ref:'Proverbs 27:17',text:'As iron sharpens iron, so one person sharpens another.',tags:['brotherhood'],pillar:'brotherhood'},
+{ref:'Philippians 4:13',text:'I can do all this through him who gives me strength.',tags:['strength','faith'],pillar:'spiritual'},
+{ref:'James 1:2-4',text:'Consider it pure joy whenever you face trials, because the testing of your faith produces perseverance.',tags:['perseverance','grit'],pillar:'resilience'},
+{ref:'Ephesians 6:10',text:'Be strong in the Lord and in his mighty power.',tags:['strength'],pillar:'spiritual'},
+{ref:'Romans 5:3-4',text:'Suffering produces perseverance; perseverance, character; and character, hope.',tags:['perseverance'],pillar:'resilience'},
+{ref:'Isaiah 40:31',text:'Those who hope in the Lord will renew their strength. They will soar on wings like eagles.',tags:['hope','strength'],pillar:'resilience'},
+{ref:'Micah 6:8',text:'Act justly, love mercy, walk humbly with your God.',tags:['justice','humility'],pillar:'leadership'},
+{ref:'2 Timothy 1:7',text:'The Spirit God gave us does not make us timid, but gives us power, love and self-discipline.',tags:['power','discipline'],pillar:'leadership'},
+{ref:'Galatians 6:2',text:"Carry each other's burdens, and fulfill the law of Christ.",tags:['brotherhood','service'],pillar:'brotherhood'},
+{ref:'Colossians 3:23',text:'Whatever you do, work at it with all your heart, as working for the Lord.',tags:['work','grit'],pillar:'leadership'},
+{ref:'Deuteronomy 31:6',text:'Be strong and courageous. The Lord your God goes with you; he will never leave you.',tags:['courage'],pillar:'resilience'},
+{ref:'Psalm 119:105',text:'Your word is a lamp for my feet, a light on my path.',tags:['scripture'],pillar:'spiritual'},
+{ref:'Ecclesiastes 4:9-10',text:'Two are better than one. If either falls down, one can help the other up.',tags:['brotherhood'],pillar:'brotherhood'},
+{ref:'Proverbs 4:23',text:'Above all else, guard your heart, for everything you do flows from it.',tags:['discipline'],pillar:'leadership'},
+];
+const DEFPL=[
+{name:'Top Christian & Gospel',sid:'37i9dQZF1DXcb6CQIjdqKy',desc:'Spotify Official · 1.6M saves',cat:'worship'},
+{name:'Praise and Worship',sid:'37i9dQZF1DX8091X7wyurB',desc:'Spotify Official · 299K saves',cat:'worship'},
+{name:'Top Christian Worship 2026',sid:'61xuizm8At6DCwGHJZTmB7',desc:'SOZO Playlists · current worship',cat:'worship'},
+{name:'Soft Worship · Calming',sid:'4TAyMk5PSfBTmCAFwTbuQg',desc:'Hillside Playlists · morning anchor',cat:'morning'},
+{name:'Instrumental Worship',sid:'1gOMEFnAIBvxGnTMf5Yx2s',desc:'Joshua David Harris · prayer & study',cat:'focus'},
+{name:'Christian Workout 2026',sid:'2gnWYHMPsaTk8yZ8qN57qF',desc:'SOZO Playlists · resilience fuel',cat:'resilience'},
+{name:'Praise & Pump',sid:'7AWCV0h3TcFpYZXOISFK2b',desc:"God's Nation · powerful workout",cat:'resilience'},
+{name:'Top Worship Songs',sid:'30wdzfOKmW7JmLPiQI0BGC',desc:'Brencee · 536K saves',cat:'worship'},
+];
+
+// Pre-built Bible plan templates
+const PLAN_TEMPLATES=[
+  {title:'Psalms in 30 Days',desc:'One Psalm per day through the heart of worship',days:30,items:Array.from({length:30},(_,i)=>'Psalm '+(i+1)),cat:'devotional'},
+  {title:'Proverbs in 31 Days',desc:'Daily wisdom — one chapter per day',days:31,items:Array.from({length:31},(_,i)=>'Proverbs '+(i+1)),cat:'wisdom'},
+  {title:'Gospel of John — 21 Days',desc:'Walk with Jesus through John\'s testimony',days:21,items:Array.from({length:21},(_,i)=>'John '+(i+1)),cat:'gospels'},
+  {title:'Romans Deep Dive — 16 Days',desc:'Paul\'s masterpiece, one chapter at a time',days:16,items:Array.from({length:16},(_,i)=>'Romans '+(i+1)),cat:'epistles'},
+  {title:'GRIT Foundations — 7 Days',desc:'The core verses from the GRIT plan',days:7,items:['Joshua 1:9','Proverbs 27:17','Philippians 4:13','James 1:2-4','Ephesians 6:10','Romans 5:3-4','Deuteronomy 31:6'],cat:'grit'},
+  {title:'Sermon on the Mount — 7 Days',desc:"Jesus' most famous teaching",days:7,items:['Matthew 5:1-16','Matthew 5:17-48','Matthew 6:1-18','Matthew 6:19-34','Matthew 7:1-14','Matthew 7:15-29','Matthew 5-7 (review)'],cat:'gospels'},
+  {title:'Armor of God — 7 Days',desc:'Spiritual warfare preparation',days:7,items:['Ephesians 6:10-13','Ephesians 6:14 (Belt of Truth)','Ephesians 6:14 (Breastplate)','Ephesians 6:15 (Feet)','Ephesians 6:16 (Shield)','Ephesians 6:17 (Helmet & Sword)','Ephesians 6:18-20 (Prayer)'],cat:'grit'},
+  {title:'Genesis — 50 Days',desc:'In the beginning — the whole book',days:50,items:Array.from({length:50},(_,i)=>'Genesis '+(i+1)),cat:'ot'},
+  {title:'Philippians — 4 Days',desc:'Joy in all circumstances',days:4,items:['Philippians 1','Philippians 2','Philippians 3','Philippians 4'],cat:'epistles'},
+  {title:'James — 5 Days',desc:'Faith in action',days:5,items:['James 1','James 2','James 3','James 4','James 5'],cat:'epistles'},
+];
+
+// Bible API (free, no key needed)
+async function bibleSearch(query){
+  try{
+    // Try bible-api.com first
+    const res=await fetch('https://bible-api.com/'+encodeURIComponent(query)+'?translation=kjv');
+    if(!res.ok)throw new Error('Not found');
+    const data=await res.json();
+    if(data.error)throw new Error(data.error);
+    return{ref:data.reference,text:data.text?.trim(),verses:data.verses};
+  }catch(e){
+    // Fallback: try web translation
+    try{
+      const res=await fetch('https://bible-api.com/'+encodeURIComponent(query));
+      if(!res.ok)return null;
+      const data=await res.json();
+      if(data.error)return null;
+      return{ref:data.reference,text:data.text?.trim()};
+    }catch{return null}
+  }
+}
+
+// SQL for host setup
+const SQL=`-- GRIT App Setup — Run in Supabase SQL Editor
+create table if not exists public.profiles(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null unique,name text default '',brother_name text default '',brother_user_id uuid,share_code text unique default encode(gen_random_bytes(4),'hex'),purpose_statement text default '',daily_intention text default '',verse_of_week text default 'Joshua 1:9',onboarded boolean default false,created_at timestamptz default now());
+alter table public.profiles enable row level security;
+create policy "p1" on public.profiles for select using (auth.uid()=user_id or user_id in(select brother_user_id from public.profiles where user_id=auth.uid()));
+create policy "p2" on public.profiles for insert with check (auth.uid()=user_id);
+create policy "p3" on public.profiles for update using (auth.uid()=user_id);
+
+create table if not exists public.journals(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,date date not null,did_well text default '',missed text default '',tomorrow text default '',tags text[] default '{}',created_at timestamptz default now(),unique(user_id,date));
+alter table public.journals enable row level security;
+create policy "j1" on public.journals for all using (auth.uid()=user_id);
+
+create table if not exists public.daily_checks(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,date date not null,morning boolean default false,midday boolean default false,evening boolean default false,unique(user_id,date));
+alter table public.daily_checks enable row level security;
+create policy "c1" on public.daily_checks for all using (auth.uid()=user_id);
+
+create table if not exists public.pillar_scores(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,month text not null,spiritual int default 0,leadership int default 0,brotherhood int default 0,resilience int default 0,unique(user_id,month));
+alter table public.pillar_scores enable row level security;
+create policy "s1" on public.pillar_scores for all using (auth.uid()=user_id);
+
+create table if not exists public.my_verses(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,reference text not null,text text default '',reflection text default '',category text default 'general',tags text[] default '{}',color text default 'red',is_pinned boolean default false,created_at timestamptz default now());
+alter table public.my_verses enable row level security;
+create policy "v1" on public.my_verses for all using (auth.uid()=user_id);
+
+create table if not exists public.bible_plans(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,title text not null,description text default '',is_active boolean default false,created_at timestamptz default now());
+alter table public.bible_plans enable row level security;
+create policy "bp1" on public.bible_plans for all using (auth.uid()=user_id);
+
+create table if not exists public.bible_plan_items(id uuid primary key default gen_random_uuid(),plan_id uuid references public.bible_plans(id) on delete cascade not null,user_id uuid references auth.users(id) on delete cascade not null,day_number int not null,reference text not null,completed boolean default false);
+alter table public.bible_plan_items enable row level security;
+create policy "bi1" on public.bible_plan_items for all using (auth.uid()=user_id);
+
+create table if not exists public.my_playlists(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,name text not null,spotify_id text not null,description text default '',category text default 'worship');
+alter table public.my_playlists enable row level security;
+create policy "pl1" on public.my_playlists for all using (auth.uid()=user_id);
+
+create table if not exists public.brotherhood_messages(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade not null,recipient_id uuid,text text not null,sender_name text default '',msg_type text default 'message',created_at timestamptz default now());
+alter table public.brotherhood_messages enable row level security;
+create policy "m1" on public.brotherhood_messages for select using (auth.uid()=user_id or auth.uid()=recipient_id);
+create policy "m2" on public.brotherhood_messages for insert with check (auth.uid()=user_id);
+
+create or replace function public.handle_new_user() returns trigger as $$ begin insert into public.profiles(user_id) values(new.id) on conflict do nothing; return new; end; $$ language plpgsql security definer;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
+`;
+
+// ═══════════════════
+// ROOM CODE: encode/decode supabase creds
+// ═══════════════════
+function encodeRoom(url,key){return btoa(url+'|'+key)}
+function decodeRoom(code){try{const s=atob(code);const i=s.indexOf('|');return{url:s.slice(0,i),key:s.slice(i+1)}}catch{return null}}
+
+// ═══════════════════
+// LOCAL STORAGE
+// ═══════════════════
+const LS={g(k){try{return JSON.parse(localStorage.getItem('grit_'+k))}catch{return null}},s(k,v){try{localStorage.setItem('grit_'+k,JSON.stringify(v))}catch(e){}},d(k){localStorage.removeItem('grit_'+k)}};
+
+// ═══════════════════
+// DATA
+// ═══════════════════
+let D={profile:{name:'',brother_name:'',purpose_statement:'',daily_intention:'',verse_of_week:'Joshua 1:9',onboarded:false},journals:{},checks:{},scores:{},msgs:[],verses:[],plans:[],planItems:{},playlists:[]};
+// Cloud state
+let C={sb:null,user:null,cloudProfile:null,brothers:[],cloudMsgs:[]};
+let U={tab:'home',modal:null,md:null,jDate:TD(),jView:'write',jSrch:'',jTag:'',wSub:'mine',wSrch:'',wPil:'',wCat:'',mSub:'playlists',spot:null,bSub:'connect',newMsg:'',calM:new Date().getMonth(),calY:new Date().getFullYear(),calSel:null,showCal:false,setTab:'general',obStep:0,authMode:'signup',authEmail:'',authPass:'',authErr:'',authLoad:false,
+// Mini-player
+mp:null,mpName:'',mpCat:'',mpExpand:false,
+// Verse search
+vsQuery:'',vsResults:null,vsLoading:false};
+
+function load(){
+  D.profile=LS.g('profile')||D.profile;D.journals=LS.g('journals')||{};D.checks=LS.g('checks')||{};
+  D.scores=LS.g('scores')||{};D.msgs=LS.g('msgs')||[];D.verses=LS.g('verses')||[];
+  D.plans=LS.g('plans')||[];D.planItems=LS.g('planItems')||{};D.playlists=LS.g('playlists')||[];
+  if(LS.g('theme')==='light')document.documentElement.classList.add('light');
+}
+function save(){LS.s('profile',D.profile);LS.s('journals',D.journals);LS.s('checks',D.checks);LS.s('scores',D.scores);LS.s('msgs',D.msgs);LS.s('verses',D.verses);LS.s('plans',D.plans);LS.s('planItems',D.planItems);LS.s('playlists',D.playlists)}
+function prof(f){Object.assign(D.profile,f);save();R()}
+function isCloud(){return!!C.sb&&!!C.user}
+
+// Cloud helpers
+async function cloudInit(){
+  const rc=LS.g('room_code');if(!rc)return;
+  const creds=decodeRoom(rc);if(!creds)return;
+  try{
+    C.sb=supabase.createClient(creds.url,creds.key);
+    const{data:{session}}=await C.sb.auth.getSession();
+    if(session){C.user=session.user;await cloudLoad();setupRealtime()}
+  }catch(e){console.warn('Cloud init failed:',e)}
+}
+async function cloudLoad(){
+  if(!isCloud())return;
+  const u=C.user.id;
+  const[p,m]=await Promise.all([
+    C.sb.from('profiles').select('*').eq('user_id',u).single(),
+    C.sb.from('brotherhood_messages').select('*').or(`user_id.eq.${u},recipient_id.eq.${u}`).order('created_at',{ascending:true}),
+  ]);
+  if(p.data)C.cloudProfile=p.data;
+  C.cloudMsgs=m.data||[];
+  // Load brother info if paired
+  if(C.cloudProfile?.brother_user_id){
+    const{data:bro}=await C.sb.from('profiles').select('name,share_code,user_id').eq('user_id',C.cloudProfile.brother_user_id).single();
+    if(bro)C.brothers=[bro];
+  }
+}
+function setupRealtime(){
+  if(!isCloud()||!C.cloudProfile?.brother_user_id)return;
+  C.sb.channel('live_msgs').on('postgres_changes',{event:'INSERT',schema:'public',table:'brotherhood_messages',filter:`recipient_id=eq.${C.user.id}`},payload=>{
+    if(!C.cloudMsgs.find(m=>m.id===payload.new.id)){C.cloudMsgs.push(payload.new);R();
+    if(Notification.permission==='granted')try{new Notification('GR!T',{body:payload.new.text})}catch(e){}}
+  }).subscribe();
+}
+async function cloudSignUp(email,pass,name){
+  const{data,error}=await C.sb.auth.signUp({email,password:pass});
+  if(error)throw error;
+  C.user=data.user;
+  // Wait a moment for trigger, then update name
+  await new Promise(r=>setTimeout(r,500));
+  await C.sb.from('profiles').update({name,onboarded:true}).eq('user_id',C.user.id);
+  await cloudLoad();
+}
+async function cloudSignIn(email,pass){
+  const{data,error}=await C.sb.auth.signInWithPassword({email,password:pass});
+  if(error)throw error;
+  C.user=data.user;await cloudLoad();setupRealtime();
+}
+async function cloudPair(code){
+  // Find brother by share_code
+  const{data}=await C.sb.from('profiles').select('user_id,name,share_code').eq('share_code',code);
+  if(!data||!data.length)return'No one found with that code.';
+  const bro=data[0];
+  if(bro.user_id===C.user.id)return"That's your own code!";
+  // Pair both ways
+  await C.sb.from('profiles').update({brother_user_id:bro.user_id,brother_name:bro.name}).eq('user_id',C.user.id);
+  await C.sb.from('profiles').update({brother_user_id:C.user.id,brother_name:C.cloudProfile.name}).eq('user_id',bro.user_id);
+  C.cloudProfile.brother_user_id=bro.user_id;C.cloudProfile.brother_name=bro.name;
+  C.brothers=[bro];
+  D.profile.brother_name=bro.name;save();
+  setupRealtime();return null;
+}
+async function cloudSendMsg(text,type='message'){
+  const bro=C.cloudProfile.brother_user_id;
+  const{data}=await C.sb.from('brotherhood_messages').insert({user_id:C.user.id,recipient_id:bro,text,sender_name:C.cloudProfile.name||D.profile.name,msg_type:type}).select().single();
+  if(data)C.cloudMsgs.push(data);R();
+}
+
+// Share helpers (local mode)
+function copyText(text){navigator.clipboard?.writeText(text);toast('Copied!')}
+function shareableVerse(v){return`📖 ${v.reference}\n"${v.text}"\n\n${v.reflection?'My reflection: '+v.reflection+'\n\n':''}— Shared from GR!T`}
+function shareableJournal(date){const j=D.journals[date];if(!j)return'';return`📓 GRIT Journal — ${date}\n\n✓ Did well: ${j.did_well||'—'}\n✗ Missed: ${j.missed||'—'}\n→ Tomorrow: ${j.tomorrow||'—'}\n\n— Shared from GR!T`}
+
+function XP(){const blob=new Blob([JSON.stringify({v:5,date:new Date().toISOString(),...D},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='grit-backup-'+TD()+'.json';a.click();toast('Exported!')}
+function IMP(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);['profile','journals','checks','scores','msgs','verses','plans','planItems','playlists'].forEach(k=>{if(d[k])D[k]=d[k]});save();toast('Restored!');R()}catch{toast('Invalid file')}};r.readAsText(file)}
+function genImg(ref,text,color){const c=document.getElementById('vc'),x=c.getContext('2d');const bg=color==='gold'?'#2A2215':color==='blue'?'#151F2E':color==='green'?'#152E1A':color==='purple'?'#231530':'#2E1510';x.fillStyle=bg;x.fillRect(0,0,1080,1080);for(let i=0;i<6000;i++){x.fillStyle=`rgba(255,255,255,${Math.random()*0.03})`;x.fillRect(Math.random()*1080,Math.random()*1080,1,1)}x.fillStyle=CHEX[color]||CHEX.red;x.fillRect(80,200,4,680);x.font='bold 32px sans-serif';x.fillStyle=CHEX[color]||CHEX.red;x.fillText('GR!T',120,260);x.font='bold 42px sans-serif';x.fillStyle='#F0EFED';x.fillText(ref,120,340);x.font='italic 28px sans-serif';x.fillStyle='rgba(240,239,237,0.85)';const words=text.split(' ');let line='',y=420;words.forEach(w=>{const t=line+w+' ';if(x.measureText(t).width>840&&line){x.fillText(line.trim(),120,y);y+=40;line=w+' '}else line=t});if(line)x.fillText(line.trim(),120,y);c.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='grit-'+ref.replace(/\W/g,'-')+'.png';a.click();toast('Image saved!')})}
+
+// ═══════════════════
+// DOM
+// ═══════════════════
+function h(tag,a,...c){const el=document.createElement(tag);if(a)for(const[k,v]of Object.entries(a)){if(k==='style'&&typeof v==='object')Object.assign(el.style,v);else if(k==='className')el.className=v;else if(k.startsWith('on'))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==='html')el.innerHTML=v;else if(k==='checked'||k==='disabled'||k==='selected'){if(v)el[k]=true}else if(k==='value')el.value=v;else el.setAttribute(k,v)}c.flat(Infinity).forEach(x=>{if(x==null||x===false)return;el.appendChild(typeof x==='string'||typeof x==='number'?document.createTextNode(String(x)):x)});return el}
+const mi=(n,s=20)=>h('span',{className:'mi material-icons-round',style:{fontSize:s+'px',lineHeight:'1'}},n);
+let toastT;function toast(m){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';Object.assign(t.style,{position:'fixed',top:'14px',left:'50%',transform:'translateX(-50%)',background:'var(--a)',color:'#fff',padding:'7px 16px',borderRadius:'20px',fontSize:'11px',fontWeight:'600',zIndex:'999',transition:'opacity .3s',fontFamily:'DM Sans,sans-serif',pointerEvents:'none'});document.body.appendChild(t)}t.textContent=m;t.style.opacity='1';clearTimeout(toastT);toastT=setTimeout(()=>{t.style.opacity='0'},2400)}
+function inp(val,ph,opts={}){const i=h('input',{className:'ip',value:val||'',placeholder:ph,...opts});return i}
+function ta(val,ph,opts={}){const t=h('textarea',{className:'ip',value:val||'',placeholder:ph,...opts});t.rows=2;return t}
+
+// ═══════════════════
+// RENDER
+// ═══════════════════
+function R(){
+  const app=document.getElementById('app');app.innerHTML='';
+  if(!D.profile.onboarded){app.appendChild(rOB());return}
+  const tabs={home:rHome,word:rWord,journal:rJournal,music:rMusic,brother:rBrother,settings:rSettings};
+  const pg=h('div',{className:'pg',style:U.mp?{paddingBottom:'120px'}:{}},h('div',{className:'pi'},tabs[U.tab]()));
+  const navI=[{id:'home',l:'Home',i:'home'},{id:'word',l:'Word',i:'auto_stories'},{id:'journal',l:'Journal',i:'edit_note'},{id:'music',l:'Worship',i:'music_note'},{id:'brother',l:'Brother',i:'group'},{id:'settings',l:'Settings',i:'tune'}];
+  const nav=h('nav',{},...navI.map(t=>{
+    const b=h('button',{className:t.id===U.tab?'act':'',onClick:()=>{U.tab=t.id;R()}},mi(t.i),h('span',{},t.l));
+    if(t.id==='brother'&&isCloud()&&C.cloudMsgs.filter(m=>m.recipient_id===C.user?.id&&m.msg_type==='nudge').length>0){/* badge could go here */}
+    return b;
+  }));
+  const shell=h('div',{style:{height:'100%',display:'flex',flexDirection:'column',overflow:'hidden'}},pg,nav);
+  app.appendChild(shell);
+  if(U.mp)app.appendChild(rMiniPlayer());
+  if(U.mp&&U.mpExpand)app.appendChild(rExpandedPlayer());
+  if(U.modal)app.appendChild(rModal());
+  requestAnimationFrame(()=>{const ml=document.getElementById('msgL');if(ml)ml.scrollTop=ml.scrollHeight});
+}
+
+// ═══════════════════
+// ONBOARDING
+// ═══════════════════
+function rOB(){
+  const s=U.obStep;
+  const w=(...k)=>h('div',{className:'cs'},h('div',{className:'ac',style:{textAlign:'center'}},h('div',{className:'logo'},'GR!T'),h('div',{className:'lsub',style:{marginBottom:28}},'Intense Fellowship'),...k,h('div',{style:{display:'flex',gap:6,justifyContent:'center',marginTop:24}},...[0,1,2].map(i=>h('span',{style:{width:7,height:7,borderRadius:'50%',display:'inline-block',background:i===s?'var(--a)':'var(--b)'}})))));
+  if(s===0){const i=inp('','Your name',{style:{marginBottom:12}});return w(h('div',{className:'fu',style:{display:'flex',flexDirection:'column',gap:4}},h('div',{style:{fontSize:17,fontWeight:600,marginBottom:8}},"What's your name, brother?"),i,h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{if(!i.value.trim())return toast('Enter your name');D.profile.name=i.value.trim();U.obStep=1;R()}},'Continue')))}
+  if(s===1){const i=inp('','Optional — add later',{style:{marginBottom:12}});return w(h('div',{className:'fu',style:{display:'flex',flexDirection:'column',gap:4}},h('div',{style:{fontSize:17,fontWeight:600,marginBottom:8}},'Accountability brother?'),i,h('div',{style:{display:'flex',gap:6}},h('button',{className:'bt bg',style:{flex:1,justifyContent:'center'},onClick:()=>{U.obStep=0;R()}},'Back'),h('button',{className:'bt',style:{flex:1,justifyContent:'center'},onClick:()=>{D.profile.brother_name=i.value.trim();U.obStep=2;R()}},'Continue'))))}
+  const i=ta('','I am a man who...',{style:{marginBottom:12}});
+  return w(h('div',{className:'fu',style:{display:'flex',flexDirection:'column',gap:4}},h('div',{style:{fontSize:17,fontWeight:600,marginBottom:4}},'Your purpose statement'),h('div',{style:{fontSize:12,color:'var(--tm)',marginBottom:8}},"Who is the man you're becoming?"),i,h('div',{style:{display:'flex',gap:6}},h('button',{className:'bt bg',style:{flex:1,justifyContent:'center'},onClick:()=>{U.obStep=1;R()}},'Back'),h('button',{className:'bt',style:{flex:1,justifyContent:'center'},onClick:()=>{D.profile.purpose_statement=i.value.trim();D.profile.onboarded=true;save();R()}},'Begin GR!T'))));
+}
+
+// ═══════════════════
+// HOME (same as v4, trimmed for space)
+// ═══════════════════
+function rHome(){
+  const p=D.profile,tk=TD(),ch=D.checks[tk]||{},done=[ch.morning,ch.midday,ch.evening].filter(Boolean).length;
+  const dow=DOW(tk),wi=WEEKLY.find(w=>w.day===dow)||WEEKLY[0];
+  const pv=D.verses.find(v=>v.reference===p.verse_of_week);const bv=BUILT_IN.find(v=>v.ref===p.verse_of_week);
+  const vowT=pv?pv.text:bv?bv.text:'Set your verse of the week in Settings.';const vowR=pv?pv.reference:bv?bv.ref:p.verse_of_week||'';
+  let streak=0;const cd=new Date();for(let i=0;i<400;i++){const k=dk(cd);const dc=D.checks[k];if(dc&&(dc.morning||dc.midday||dc.evening)){streak++;cd.setDate(cd.getDate()-1)}else break}
+  const cm=new Date().toISOString().slice(0,7),sc=D.scores[cm]||{};
+  const ap=D.plans.find(x=>x.active);const pi2=ap?D.planItems[ap.id]||[]:[];const pd=pi2.filter(x=>x.done).length;
+  const rs=54,rr=21,rc=2*Math.PI*rr;
+  const chkR=(key,em,lb,tm,ds)=>{const d=ch[key];return h('div',{className:'chk'+(d?' dn':''),onClick:()=>{if(!D.checks[tk])D.checks[tk]={};D.checks[tk][key]=!d;save();R()}},h('span',{style:{fontSize:18}},em),h('div',{style:{flex:1}},h('div',{style:{fontWeight:600,fontSize:12}},lb,' ',h('span',{style:{color:'var(--td)',fontWeight:400,fontSize:10}},'· '+tm)),h('div',{style:{color:'var(--tm)',fontSize:10}},ds)),h('div',{className:'dot'},d?mi('check',13):null))};
+  const isL=document.documentElement.classList.contains('light');
+  return h('div',{},
+    h('div',{className:'fu',style:{marginBottom:14}},h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},h('div',{},h('div',{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,letterSpacing:4,color:'var(--a)'}},'GR!T'),h('div',{style:{fontSize:10,color:'var(--tm)'}},new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))),h('div',{style:{display:'flex',gap:5}},h('button',{className:'bt bg bs',onClick:()=>{document.documentElement.classList.toggle('light');LS.s('theme',document.documentElement.classList.contains('light')?'light':'dark');R()}},mi(isL?'dark_mode':'light_mode',14)),h('button',{className:'bt bg bs',onClick:()=>{U.showCal=!U.showCal;R()}},mi('calendar_today',14)))),h('div',{style:{fontSize:16,fontWeight:600,marginTop:8}},'Hey '+(p.name||'brother')+' 💪')),
+    U.showCal?rCal():null,
+    h('div',{className:'cd fu f1',style:{display:'flex',alignItems:'center',gap:12}},h('div',{style:{position:'relative',width:rs,height:rs,flexShrink:0},html:`<svg width="${rs}" height="${rs}" class="ring"><circle cx="${rs/2}" cy="${rs/2}" r="${rr}" fill="none" stroke="var(--b)" stroke-width="4"/><circle cx="${rs/2}" cy="${rs/2}" r="${rr}" fill="none" stroke="var(--a)" stroke-width="4" stroke-dasharray="${(done/3)*rc} ${rc}" stroke-linecap="round"/></svg>`},h('div',{style:{position:'absolute',inset:'0',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',fontWeight:'700'}},done+'/3')),h('div',{style:{flex:1}},h('div',{style:{fontSize:10,color:'var(--tm)'}},'Progress'),h('div',{style:{fontSize:17,fontWeight:700}},streak+' day streak')),h('div',{style:{textAlign:'right'}},h('div',{style:{fontSize:9,color:'var(--td)',textTransform:'uppercase',letterSpacing:'1px'}},dow),h('div',{style:{fontSize:11,fontWeight:600,color:'var(--a)'}},wi.f))),
+    (()=>{const i=inp(p.daily_intention,'Set an intention...',{style:{fontSize:14,fontWeight:600,textAlign:'center',background:'transparent',borderStyle:'dashed'}});i.addEventListener('blur',()=>prof({daily_intention:i.value}));return h('div',{className:'cd fu f2'},h('div',{className:'lb'},"Today's Intention"),i)})(),
+    ap?h('div',{className:'cd fu f2',style:{borderLeft:'3px solid var(--ok)'}},h('div',{style:{display:'flex',justifyContent:'space-between'}},h('div',{className:'lb',style:{color:'var(--ok)',marginBottom:0}},ap.title),h('div',{style:{fontSize:12,fontWeight:700,color:'var(--ok)'}},pd+'/'+pi2.length)),h('div',{style:{height:4,background:'var(--b)',borderRadius:2,marginTop:5}},h('div',{style:{height:'100%',background:'var(--ok)',borderRadius:2,width:(pi2.length?(pd/pi2.length)*100:0)+'%'}}))):null,
+    h('div',{className:'fu f3'},h('div',{className:'sb'},'Daily Rhythm'),chkR('morning','☀️','Morning Anchor','15–20m','Scripture, prayer, set intention'),chkR('midday','⏸️','Midday Check','5m','Living my intention? Realign.'),chkR('evening','🌙','Evening Debrief','10m','Journal, verse review, gratitude')),
+    vowR?h('div',{className:'cd fu f4',style:{borderLeft:'3px solid var(--a)',marginTop:8}},h('div',{className:'lb'},'Verse of the Week'),h('div',{style:{fontSize:12,lineHeight:1.5,fontStyle:'italic',marginBottom:3}},'"'+vowT+'"'),h('div',{style:{fontWeight:700,fontSize:11,color:'var(--a)'}},vowR)):null,
+    h('div',{className:'fu',style:{marginTop:10}},h('div',{className:'sb'},'Four Pillars'),h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}},...PILLARS.map(pi=>{const s=sc[pi.key]||0;return h('div',{className:'cd',style:{textAlign:'center',padding:10}},h('div',{style:{fontSize:18}},pi.icon),h('div',{style:{fontSize:9,fontWeight:600}},pi.label),h('div',{style:{fontSize:18,fontWeight:700,color:s>7?'var(--ok)':s>4?'var(--w)':'var(--a)',marginTop:2}},s||'—'))}))),
+    p.purpose_statement?h('div',{className:'cd fu',style:{marginTop:8,background:'var(--ad)',borderColor:'var(--a)'}},h('div',{className:'lb',style:{color:'var(--a)'}},'My Purpose'),h('div',{style:{fontSize:12,lineHeight:1.4}},p.purpose_statement)):null);
+}
+function rCal(){const y=U.calY,m=U.calM,fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),mn=new Date(y,m).toLocaleDateString('en-US',{month:'long',year:'numeric'});const cells=[];for(let i=0;i<fd;i++)cells.push(null);for(let i=1;i<=dim;i++)cells.push(i);const gdd=day=>{if(!day)return null;const k=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;const j=D.journals[k],c=D.checks[k];return{k,j,c,hj:j&&(j.did_well||j.missed||j.tomorrow),cn:c?[c.morning,c.midday,c.evening].filter(Boolean).length:0}};const sel=U.calSel?gdd(U.calSel):null;return h('div',{className:'cd fu',style:{marginBottom:8}},h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}},h('button',{className:'bt bg bs',onClick:()=>{U.calM--;if(U.calM<0){U.calM=11;U.calY--}U.calSel=null;R()}},mi('chevron_left',16)),h('div',{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:17}},mn),h('button',{className:'bt bg bs',onClick:()=>{U.calM++;if(U.calM>11){U.calM=0;U.calY++}U.calSel=null;R()}},mi('chevron_right',16))),h('div',{className:'cg',style:{marginBottom:3}},...'SMTWTFS'.split('').map(d=>h('div',{style:{textAlign:'center',fontSize:9,fontWeight:600,color:'var(--td)'}},d))),h('div',{className:'cg',style:{marginBottom:6}},...cells.map(day=>{if(!day)return h('div',{});const dd=gdd(day),isTd=dd.k===TD(),isSl=U.calSel===day;return h('div',{className:'cc'+(isTd&&!isSl?' today':'')+(isSl?' sel':''),onClick:()=>{U.calSel=day;R()}},h('span',{style:{fontWeight:isTd?'700':'400',fontSize:'11px'}},''+day),(dd.hj||dd.cn>0)?h('div',{style:{display:'flex',gap:'1px',marginTop:'1px'}},dd.cn>0?h('span',{style:{width:'3px',height:'3px',borderRadius:'50%',background:dd.cn===3?'var(--ok)':'var(--w)'}}):null,dd.hj?h('span',{style:{width:'3px',height:'3px',borderRadius:'50%',background:'var(--a)'}}):null):null)})),sel?h('div',{className:'fu',style:{borderTop:'1px solid var(--b)',paddingTop:6}},h('div',{style:{fontSize:11,fontWeight:600,marginBottom:4}},new Date(sel.k+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})),sel.hj?h('div',{style:{fontSize:10}},sel.j.did_well?h('div',{},h('span',{style:{color:'var(--ok)'}},'✓ '),sel.j.did_well):null):h('div',{style:{fontSize:10,color:'var(--td)'}},'No entry')):null)}
+
+// ═══════════════════
+// MINI-PLAYER (persistent across tabs)
+// ═══════════════════
+function playPlaylist(sid,name,cat){U.mp=sid;U.mpName=name;U.mpCat=cat||'';U.mpExpand=false;R()}
+function rMiniPlayer(){
+  if(U.mpExpand)return h('div',{});
+  return h('div',{className:'mini-player'},
+    h('div',{className:'mp-bar'},
+      h('div',{className:'mp-art',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},mi('music_note',18)),
+      h('div',{className:'mp-info',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},
+        h('div',{className:'mp-name'},U.mpName||'Now Playing'),
+        h('div',{className:'mp-cat'},U.mpCat||'Worship')),
+      h('button',{className:'bt bg bs',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},mi(U.mpExpand?'expand_more':'expand_less',16)),
+      h('button',{className:'bt bg bs',style:{marginLeft:2},onClick:()=>{U.mp=null;U.mpExpand=false;R()}},mi('close',14))));
+}
+function rExpandedPlayer(){
+  if(!U.mp)return h('div',{});
+  return h('div',{className:'mp-expand'+(U.mpExpand?'':' hidden')},
+    h('div',{style:{padding:'8px 12px 4px',display:'flex',justifyContent:'space-between',alignItems:'center'}},
+      h('div',{style:{fontWeight:600,fontSize:12}},U.mpName),
+      h('button',{className:'bt bg bs',onClick:()=>{U.mpExpand=false;R()}},'Minimize')),
+    h('div',{style:{padding:'0 6px 6px'},html:`<iframe src="https://open.spotify.com/embed/playlist/${U.mp}?theme=0" width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px"></iframe>`}));
+}
+
+// Word, Journal, Music tabs (same as v4 — keeping compact)
+function rWord(){return h('div',{},h('div',{className:'st'},'The Word'),h('div',{className:'pl'},h('div',{className:U.wSub==='mine'?'on':'',onClick:()=>{U.wSub='mine';R()}},'My Verses'),h('div',{className:U.wSub==='plans'?'on':'',onClick:()=>{U.wSub='plans';R()}},'Plans'),h('div',{className:U.wSub==='library'?'on':'',onClick:()=>{U.wSub='library';R()}},'Library')),U.wSub==='mine'?rMV():U.wSub==='plans'?rPL():rLib())}
+function rMV(){let filt=D.verses.filter(v=>{if(U.wCat&&v.category!==U.wCat)return false;if(U.wSrch){const s=U.wSrch.toLowerCase();return v.reference.toLowerCase().includes(s)||v.text.toLowerCase().includes(s)||(v.reflection||'').toLowerCase().includes(s)||(v.tags||[]).some(t=>t.includes(s))}return true});filt.sort((a,b)=>(b.is_pinned?1:0)-(a.is_pinned?1:0));const si=inp(U.wSrch,'Search my verses...',{style:{paddingLeft:'28px'}});si.addEventListener('input',()=>{U.wSrch=si.value;R()});return h('div',{className:'fu'},h('div',{style:{display:'flex',gap:6,marginBottom:8}},h('button',{className:'bt',style:{flexShrink:0},onClick:()=>{U.modal='addV';U.md={reference:'',text:'',reflection:'',category:'general',color:'red',tags:[]};R()}},mi('add',14),' Add'),h('div',{style:{flex:1,position:'relative'}},si)),h('div',{style:{display:'flex',gap:2,flexWrap:'wrap',marginBottom:8}},h('span',{className:'tg'+(!U.wCat?' on':''),onClick:()=>{U.wCat='';R()}},'All'),...VCATS.map(c=>h('span',{className:'tg'+(U.wCat===c?' on':''),onClick:()=>{U.wCat=U.wCat===c?'':c;R()}},c))),filt.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},D.verses.length===0?h('div',{},h('div',{style:{fontSize:26,marginBottom:6}},'📖'),'Your scripture sandbox. Add verses God has spoken to you.'):'No matches'):h('div',{},...filt.map(v=>h('div',{className:'vc '+v.color,style:{cursor:'pointer'},onClick:()=>{U.modal='editV';U.md={...v};R()}},h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'start'}},h('div',{},v.is_pinned?'📌 ':null,h('span',{style:{fontWeight:700,fontSize:11,color:CHEX[v.color]}},v.reference)),h('div',{style:{display:'flex',gap:3}},h('button',{className:'tg',style:{fontSize:8},onClick:e=>{e.stopPropagation();genImg(v.reference,v.text,v.color)}},'📸'),h('button',{className:'tg',style:{fontSize:8},onClick:e=>{e.stopPropagation();copyText(shareableVerse(v))}},'📋 Share'))),h('div',{style:{fontSize:11,lineHeight:1.4,fontStyle:'italic',color:'var(--tm)',marginTop:3}},'"'+v.text+'"'),v.reflection?h('div',{style:{fontSize:10,marginTop:5,padding:'5px 7px',background:'var(--sa)',borderRadius:5}},h('div',{style:{fontSize:8,fontWeight:600,color:'var(--td)',marginBottom:1}},'MY REFLECTION'),v.reflection):null))))}
+function rPL(){
+  const tmplCats=[...new Set(PLAN_TEMPLATES.map(t=>t.cat))];
+  return h('div',{className:'fu'},
+    h('div',{style:{display:'flex',gap:6,marginBottom:10}},
+      h('button',{className:'bt',style:{flexShrink:0},onClick:()=>{U.modal='addPlan';U.md={title:'',desc:'',items:['']};R()}},mi('add',14),' Custom Plan'),
+      h('button',{className:'bt bg',style:{flexShrink:0},onClick:()=>{U.modal='templates';U.md={};R()}},mi('library_books',14),' Browse Templates')),
+    D.plans.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},
+      h('div',{style:{fontSize:26,marginBottom:6}},'📋'),
+      h('div',{style:{fontSize:12,marginBottom:4}},'Build or import a reading plan.'),
+      h('div',{style:{fontSize:10,color:'var(--td)'}},'Browse '+(PLAN_TEMPLATES.length)+' ready-made templates or create your own.')):
+    h('div',{},...D.plans.map(pl=>{const it=D.planItems[pl.id]||[];const dn=it.filter(x=>x.done).length;return h('div',{className:'cd'},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}},h('div',{style:{fontWeight:700,fontSize:12}},pl.title),h('div',{style:{display:'flex',gap:3}},pl.active?h('span',{style:{fontSize:8,background:'var(--ok)',color:'#fff',padding:'2px 7px',borderRadius:10,fontWeight:600}},'ACTIVE'):h('button',{className:'bt bg bs',onClick:()=>{D.plans.forEach(p=>p.active=p.id===pl.id);save();R()}},'Activate'),h('button',{className:'bt bg bs',style:{color:'#e55'},onClick:()=>{if(confirm('Delete?')){D.plans=D.plans.filter(x=>x.id!==pl.id);delete D.planItems[pl.id];save();R()}}},'✕'))),h('div',{style:{height:3,background:'var(--b)',borderRadius:2,marginBottom:6}},h('div',{style:{height:'100%',background:'var(--ok)',borderRadius:2,width:(it.length?(dn/it.length)*100:0)+'%'}})),h('div',{style:{fontSize:9,color:'var(--tm)',marginBottom:4}},dn+'/'+it.length),...it.map(i=>h('div',{className:'plan-day',style:{cursor:'pointer'},onClick:()=>{i.done=!i.done;save();R()}},h('div',{className:'dot',style:{width:'18px',height:'18px',borderWidth:'2px',borderColor:i.done?'var(--ok)':'var(--b)',background:i.done?'var(--ok)':'transparent'}},i.done?mi('check',11):null),h('span',{style:{fontSize:9,color:'var(--td)',minWidth:'26px'}},'Day '+i.day),h('span',{style:{fontSize:11,fontWeight:i.done?400:600,textDecoration:i.done?'line-through':'none'}},i.ref))))})));
+}
+function rLib(){const filt=BUILT_IN.filter(v=>{if(U.wPil&&v.pillar!==U.wPil)return false;if(U.wSrch){const s=U.wSrch.toLowerCase();return v.ref.toLowerCase().includes(s)||v.text.toLowerCase().includes(s)||v.tags.some(t=>t.includes(s))}return true});return h('div',{className:'fu'},...filt.map(v=>h('div',{className:'cd'},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:3}},h('span',{style:{fontWeight:700,fontSize:11,color:'var(--a)'}},v.ref),h('button',{className:'bt bg bs',onClick:()=>{U.modal='addV';U.md={reference:v.ref,text:v.text,reflection:'',category:'general',color:'red',tags:[...v.tags]};R()}},'+ Mine')),h('div',{style:{fontSize:10,fontStyle:'italic',color:'var(--tm)'}},'"'+v.text+'"'))))}
+function rJournal(){const date=U.jDate,entry=D.journals[date]||{},tags=entry.tags||[],isW=U.jView==='write';const allE=Object.entries(D.journals).sort(([a],[b])=>b.localeCompare(a)).filter(([k,v])=>{if(U.jTag&&!(v.tags||[]).includes(U.jTag))return false;if(U.jSrch){const s=U.jSrch.toLowerCase();return(v.did_well||'').toLowerCase().includes(s)||(v.missed||'').toLowerCase().includes(s)||(v.tomorrow||'').toLowerCase().includes(s)}return true});const uf=(f,val)=>{if(!D.journals[date])D.journals[date]={tags:[]};D.journals[date][f]=val;save()};const tt=tag=>{if(!D.journals[date])D.journals[date]={tags:[]};if(!D.journals[date].tags)D.journals[date].tags=[];const c=D.journals[date].tags;D.journals[date].tags=c.includes(tag)?c.filter(x=>x!==tag):[...c,tag];save();R()};const mkTA=(f,v,p)=>{const t=ta(v,p);t.addEventListener('blur',()=>uf(f,t.value));return t};
+  return h('div',{},h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}},h('div',{className:'st',style:{marginBottom:0}},'Journal'),h('div',{className:'pl',style:{width:'130px',marginBottom:0}},h('div',{className:isW?'on':'',onClick:()=>{U.jView='write';R()}},'Write'),h('div',{className:!isW?'on':'',onClick:()=>{U.jView='browse';R()}},'Browse'))),isW?h('div',{className:'fu'},(()=>{const i=inp(date,'',{type:'date',style:{textAlign:'center',marginBottom:8}});i.addEventListener('change',()=>{U.jDate=i.value;R()});return i})(),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--ok)',marginBottom:3}},'✓ What did I do well?'),mkTA('did_well',entry.did_well,'Wins...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--w)',marginBottom:3}},'✗ Where did I miss?'),mkTA('missed',entry.missed,'Honest...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--a)',marginBottom:3}},'→ Tomorrow needs?'),mkTA('tomorrow',entry.tomorrow,'Intention...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--tm)',marginBottom:4}},'Tags'),h('div',{style:{display:'flex',flexWrap:'wrap',gap:2}},...TAGS.map(t=>h('span',{className:'tg'+(tags.includes(t)?' on':''),onClick:()=>tt(t)},t)))),entry.did_well||entry.missed?h('button',{className:'bt bg bs',style:{marginTop:4},onClick:()=>copyText(shareableJournal(date))},mi('content_copy',12),' Copy as shareable text'):null):h('div',{className:'fu'},(()=>{const si=inp(U.jSrch,'Search...',{style:{paddingLeft:28}});si.addEventListener('input',()=>{U.jSrch=si.value;R()});return h('div',{style:{display:'flex',gap:6,marginBottom:8}},h('div',{style:{flex:1,position:'relative'}},si))})(),allE.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},'No entries'):h('div',{},...allE.map(([k,v])=>h('div',{className:'cd',style:{cursor:'pointer'},onClick:()=>{U.jDate=k;U.jView='write';R()}},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:2}},h('div',{style:{fontSize:11,fontWeight:600}},new Date(k+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}))),v.did_well?h('div',{style:{fontSize:10,color:'var(--tm)'}},'✓ '+(v.did_well||'').slice(0,60)):null)))))}
+function rMusic(){return h('div',{},h('div',{className:'st'},'Worship'),h('div',{className:'pl'},h('div',{className:U.mSub==='playlists'?'on':'',onClick:()=>{U.mSub='playlists';R()}},'My Playlists'),h('div',{className:U.mSub!=='playlists'?'on':'',onClick:()=>{U.mSub='discover';R()}},'Discover')),h('button',{className:'bt',style:{marginBottom:10},onClick:()=>{U.modal='addPL';U.md={name:'',url:'',desc:'',cat:'worship'};R()}},mi('add',14),' Add Playlist'),U.mSub==='playlists'?(D.playlists.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},'🎵 Add your own Spotify playlists.'):h('div',{},...D.playlists.map(p=>rPC(p,1)))):h('div',{},...DEFPL.map(p=>rPC(p,0))))}
+function rPC(pl,c){const sid=pl.spotify_id||pl.sid;const isPlaying=U.mp===sid;return h('div',{style:{marginBottom:6}},h('div',{className:'cd',style:{cursor:'pointer',display:'flex',alignItems:'center',gap:8,borderColor:isPlaying?'var(--a)':'var(--b)',background:isPlaying?'var(--ad)':'var(--s)'},onClick:()=>{if(isPlaying){U.mpExpand=!U.mpExpand;R()}else{playPlaylist(sid,pl.name,pl.description||pl.desc||pl.cat||'')}}},h('div',{style:{width:32,height:32,borderRadius:6,background:isPlaying?'var(--a)':'var(--ad)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,color:isPlaying?'#fff':'var(--a)'}},mi(isPlaying?'equalizer':'play_arrow',16)),h('div',{style:{flex:1}},h('div',{style:{fontWeight:600,fontSize:11}},pl.name),h('div',{style:{fontSize:9,color:'var(--tm)'}},pl.description||pl.desc||'')),isPlaying?h('span',{style:{fontSize:9,color:'var(--a)',fontWeight:600}},'PLAYING'):null,c?h('button',{className:'bt bg bs',style:{color:'#e55'},onClick:e=>{e.stopPropagation();D.playlists=D.playlists.filter(x=>x.id!==pl.id);save();R()}},'✕'):null))}
+
+// ═══════════════════
+// BROTHERHOOD (context-aware)
+// ═══════════════════
+function rBrother(){
+  const p=D.profile,cm=new Date().toISOString().slice(0,7),sc=D.scores[cm]||{};
+  const cloud=isCloud();
+  const paired=cloud&&C.cloudProfile?.brother_user_id;
+
+  return h('div',{},
+    h('div',{className:'st'},'Brotherhood'),
+    h('div',{className:'pl'},
+      h('div',{className:U.bSub==='connect'?'on':'',onClick:()=>{U.bSub='connect';R()}},'Connect'),
+      h('div',{className:U.bSub==='log'?'on':'',onClick:()=>{U.bSub='log';R()}},'Log'),
+      h('div',{className:U.bSub==='score'?'on':'',onClick:()=>{U.bSub='score';R()}},'Score')),
+
+    // CONNECTION STATUS BANNER
+    h('div',{className:'cd',style:{display:'flex',alignItems:'center',gap:10}},
+      h('div',{className:'status-dot',style:{background:paired?'var(--ok)':cloud?'var(--w)':'var(--td)'}}),
+      h('div',{style:{flex:1}},
+        h('div',{style:{fontWeight:600,fontSize:12}},paired?'Connected with '+(C.cloudProfile.brother_name||'your brother'):cloud?'Online — no brother paired yet':'Local mode'),
+        h('div',{style:{fontSize:10,color:'var(--tm)'}},paired?'Real-time messages enabled':cloud?'Share your code to pair':'Journal privately · share via text'))),
+
+    U.bSub==='connect'?rBrotherConnect(cloud,paired):
+    U.bSub==='score'?rBrotherScore(cm,sc):
+    rBrotherLog(cloud,paired));
+}
+
+function rBrotherConnect(cloud,paired){
+  // LOCAL MODE — explain and offer upgrade
+  if(!cloud){
+    return h('div',{className:'fu'},
+      h('div',{className:'hint'},
+        h('div',{className:'hint-icon'},'🔗'),
+        h('div',{style:{fontSize:13,fontWeight:600,marginBottom:4}},'Connect with your brother'),
+        h('div',{style:{fontSize:11,color:'var(--tm)',lineHeight:1.5,marginBottom:10}},"Right now you're in local mode — your data lives only on this device. To pair with a real accountability brother and send live messages, join a Room."),
+        h('div',{style:{fontSize:11,color:'var(--tm)',lineHeight:1.5,marginBottom:10}},"One person hosts the room (sets up a free Supabase project in Settings). Everyone else just enters the room code — no database knowledge needed."),
+        h('button',{className:'bt',onClick:()=>{U.tab='settings';U.setTab='cloud';R()}},'Set up or join a Room →')),
+      h('div',{className:'cd'},
+        h('div',{className:'sb'},'Share manually for now'),
+        h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:8,lineHeight:1.4}},'Copy your journal or verses as formatted text to send via iMessage, WhatsApp, or any messenger.'),
+        h('div',{style:{display:'flex',gap:6,flexWrap:'wrap'}},
+          h('button',{className:'bt bg bs',onClick:()=>{const j=D.journals[TD()];if(j)copyText(shareableJournal(TD()));else toast('No journal entry today')}},"Copy today's journal"),
+          D.verses.length>0?h('button',{className:'bt bg bs',onClick:()=>{const v=D.verses.find(x=>x.is_pinned)||D.verses[0];copyText(shareableVerse(v))}},'Copy a verse'):null)),
+      // Brother name (local)
+      h('div',{className:'cd'},h('div',{className:'lb'},'Accountability Brother Name (local reminder)'),(()=>{const i=inp(D.profile.brother_name,"Brother's name");i.addEventListener('blur',()=>prof({brother_name:i.value}));return i})()));
+  }
+
+  // CLOUD BUT NOT PAIRED
+  if(!paired){
+    const codeInp=inp('','Enter brother\'s share code');
+    return h('div',{className:'fu'},
+      h('div',{className:'cd',style:{textAlign:'center'}},
+        h('div',{className:'lb'},'Your Share Code'),
+        h('div',{className:'room-code'},C.cloudProfile?.share_code||'...'),
+        h('div',{style:{fontSize:10,color:'var(--td)',marginTop:4}},'Give this code to your brother'),
+        h('button',{className:'bt bg bs',style:{marginTop:8},onClick:()=>copyText(C.cloudProfile?.share_code||'')},'Copy Code')),
+      h('div',{className:'cd'},
+        h('div',{className:'lb'},"Enter your brother's code to pair"),
+        h('div',{style:{display:'flex',gap:6}},
+          codeInp,
+          h('button',{className:'bt',onClick:async()=>{
+            if(!codeInp.value.trim())return;
+            const err=await cloudPair(codeInp.value.trim());
+            if(err)toast(err);else{toast('Paired! 🤝');R()}
+          }},'Pair'))),
+      h('div',{style:{fontSize:11,color:'var(--tm)',textAlign:'center',marginTop:8,lineHeight:1.5}},'Both brothers need to be signed into the same room. Exchange share codes to connect.'));
+  }
+
+  // PAIRED — show connection info + nudges
+  return h('div',{className:'fu'},
+    h('div',{className:'cd',style:{borderLeft:'3px solid var(--ok)'}},
+      h('div',{style:{display:'flex',alignItems:'center',gap:10}},
+        h('span',{style:{fontSize:26}},'🤝'),
+        h('div',{},
+          h('div',{style:{fontWeight:700,fontSize:14}},C.cloudProfile.brother_name||'Brother'),
+          h('div',{style:{fontSize:10,color:'var(--ok)'}},'Paired & connected')))),
+    h('div',{className:'cd'},
+      h('div',{className:'lb'},'Send a Nudge'),
+      h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:8}},"Remind your brother to show up."),
+      h('div',{style:{display:'flex',flexWrap:'wrap',gap:4}},
+        ...['Where you at today?','Morning anchor done?','Iron sharpens iron.','Push through.','Praying for you.'].map(msg=>
+          h('button',{className:'bt bg bs',onClick:()=>{cloudSendMsg(msg,'nudge');toast('Nudge sent! 🔥')}},msg)))),
+    h('div',{className:'cd',style:{borderLeft:'3px solid var(--a)'}},
+      h('div',{className:'lb',style:{color:'var(--a)'}},'Weekly Question'),
+      h('div',{style:{fontSize:12,fontStyle:'italic',lineHeight:1.4}},'"Where did you have grit this week — and where did you quit?"'),
+      h('div',{style:{fontSize:9,color:'var(--td)',marginTop:3}},'Every Wednesday · No softballing')));
+}
+
+function rBrotherLog(cloud,paired){
+  // Choose which messages to show
+  const msgs=paired?C.cloudMsgs:D.msgs;
+  const myId=cloud?C.user?.id:null;
+
+  return h('div',{className:'fu'},
+    h('div',{className:'cd',style:{padding:0}},
+      h('div',{className:'ml',id:'msgL'},
+        msgs.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)',fontSize:11}},paired?'Send a message to your brother.':'Log check-ins, prayers, and grit moments.'):
+        h('div',{},...msgs.map(m=>{
+          const mine=paired?(m.user_id===myId):(m.sender==='me');
+          const isNudge=m.msg_type==='nudge';
+          if(isNudge&&!mine)return h('div',{style:{background:'var(--ad)',border:'1px solid var(--a)',borderRadius:'var(--r)',padding:8,marginBottom:6}},h('div',{style:{fontSize:9,fontWeight:600,color:'var(--a)'}},'🔥 NUDGE'+(m.sender_name?' from '+m.sender_name:'')),h('div',{style:{fontSize:12,marginTop:2}},m.text));
+          return h('div',{style:{display:'flex',justifyContent:mine?'flex-end':'flex-start'}},
+            h('div',{className:'mb '+(mine?'mm':'mo')},
+              !mine&&m.sender_name?h('div',{style:{fontSize:9,fontWeight:600,color:'var(--a)',marginBottom:2}},m.sender_name):null,
+              h('div',{},m.text),
+              h('div',{style:{fontSize:8,marginTop:1,opacity:.6}},new Date(m.created_at||m.time).toLocaleDateString('en-US',{month:'short',day:'numeric'}))));
+        }))),
+      h('div',{style:{borderTop:'1px solid var(--b)',padding:6,display:'flex',gap:6}},
+        (()=>{const i=inp(U.newMsg,'Type a message...',{style:{flex:1}});i.addEventListener('input',()=>{U.newMsg=i.value});i.addEventListener('keydown',e=>{if(e.key==='Enter'&&i.value.trim()){sendBroMsg(i.value.trim());U.newMsg='';R()}});return i})(),
+        h('button',{className:'bt',style:{padding:'6px 10px'},onClick:()=>{if(!U.newMsg.trim())return;sendBroMsg(U.newMsg.trim());U.newMsg='';R()}},mi('send',14)))),
+    h('div',{className:'cd',style:{borderColor:'var(--w)',background:'rgba(255,152,0,.04)',marginTop:6}},
+      h('div',{style:{fontSize:10,fontWeight:700,color:'var(--w)',marginBottom:2}},'When You Fall Off'),
+      h('div',{style:{fontSize:10,color:'var(--tm)',lineHeight:1.3}},"Missing a day is normal. Missing a week is a signal.")));
+}
+function sendBroMsg(text){
+  if(isCloud()&&C.cloudProfile?.brother_user_id){cloudSendMsg(text)}
+  else{D.msgs.push({text,sender:'me',time:new Date().toISOString(),id:ID()});save()}
+}
+
+function rBrotherScore(cm,sc){
+  return h('div',{className:'fu'},...PILLARS.map(pi=>{const s=sc[pi.key]||0;return h('div',{className:'cd',style:{padding:10,marginBottom:4}},h('div',{style:{display:'flex',alignItems:'center',gap:6,marginBottom:5}},h('span',{},pi.icon),h('span',{style:{fontWeight:600,fontSize:11}},pi.label),h('span',{style:{marginLeft:'auto',fontSize:16,fontWeight:700,color:s>7?'var(--ok)':s>4?'var(--w)':'var(--a)'}},s||'—')),h('div',{className:'sr'},...[1,2,3,4,5,6,7,8,9,10].map(n=>h('button',{className:'sb2'+(s===n?' on':''),onClick:()=>{if(!D.scores[cm])D.scores[cm]={};D.scores[cm][pi.key]=n;save();R()}},''+n))))}));
+}
+
+// ═══════════════════
+// SETTINGS (Host/Guest Room system)
+// ═══════════════════
+function rSettings(){
+  const isL=document.documentElement.classList.contains('light');
+  const hasRoom=!!LS.g('room_code');
+  return h('div',{},h('div',{className:'st'},'Settings'),
+    h('div',{className:'pl'},h('div',{className:U.setTab==='general'?'on':'',onClick:()=>{U.setTab='general';R()}},'General'),h('div',{className:U.setTab==='data'?'on':'',onClick:()=>{U.setTab='data';R()}},'Data'),h('div',{className:U.setTab==='cloud'?'on':'',onClick:()=>{U.setTab='cloud';R()}},'Room')),
+
+    U.setTab==='general'?h('div',{className:'fu'},
+      h('div',{className:'cd',style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},h('div',{},h('div',{style:{fontWeight:600,fontSize:13}},isL?'Light':'Dark'),h('div',{style:{fontSize:10,color:'var(--tm)'}},'Theme')),h('div',{className:'toggle'+(isL?' on':''),onClick:()=>{document.documentElement.classList.toggle('light');LS.s('theme',document.documentElement.classList.contains('light')?'light':'dark');R()}})),
+      h('div',{className:'cd'},h('div',{className:'lb'},'Name'),(()=>{const i=inp(D.profile.name,'');i.addEventListener('blur',()=>prof({name:i.value}));return i})()),
+      h('div',{className:'cd'},h('div',{className:'lb'},'Purpose Statement'),(()=>{const i=ta(D.profile.purpose_statement,'');i.addEventListener('blur',()=>prof({purpose_statement:i.value}));return i})()),
+      h('div',{className:'cd'},h('div',{className:'lb'},'Verse of the Week'),(()=>{const i=inp(D.profile.verse_of_week,'e.g. Joshua 1:9');i.addEventListener('blur',()=>prof({verse_of_week:i.value}));return i})()),
+      h('div',{className:'cd',style:{marginTop:10}},h('button',{className:'bt',style:{width:'100%',justifyContent:'center',background:'#c44'},onClick:()=>{if(confirm('Reset everything?')){Object.keys(localStorage).filter(k=>k.startsWith('grit_')).forEach(k=>localStorage.removeItem(k));location.reload()}}},'Reset All Data'))):
+
+    U.setTab==='data'?h('div',{className:'fu'},
+      h('div',{className:'cd'},h('div',{className:'sb',style:{marginBottom:4}},'Backup & Restore'),h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:10,lineHeight:1.4}},'Export your GRIT journey as JSON. Import on any device.'),h('div',{style:{display:'flex',gap:6}},h('button',{className:'bt',style:{flex:1,justifyContent:'center'},onClick:XP},mi('download',14),' Export'),h('button',{className:'bt bg',style:{flex:1,justifyContent:'center'},onClick:()=>{const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=e=>{if(e.target.files[0])IMP(e.target.files[0])};i.click()}},mi('upload',14),' Import'))),
+      h('div',{className:'cd'},h('div',{className:'sb',style:{marginBottom:4}},'Journey Stats'),h('div',{style:{fontSize:11,color:'var(--tm)',lineHeight:1.8}},'📖 '+D.verses.length+' personal verses\n📓 '+Object.keys(D.journals).length+' journal entries\n📋 '+D.plans.length+' Bible plans\n🎵 '+D.playlists.length+' playlists\n💬 '+D.msgs.length+' log entries'))):
+
+    // ROOM TAB
+    h('div',{className:'fu'},
+      // Status
+      h('div',{className:'cd',style:{display:'flex',alignItems:'center',gap:10}},
+        h('div',{className:'status-dot',style:{background:isCloud()?'var(--ok)':hasRoom?'var(--w)':'var(--td)'}}),
+        h('div',{style:{flex:1}},
+          h('div',{style:{fontWeight:600,fontSize:13}},isCloud()?'In room — signed in':hasRoom?'Room joined — sign in':'No room connected'),
+          h('div',{style:{fontSize:10,color:'var(--tm)'}},isCloud()?C.user.email:'Local mode'))),
+
+      // If not in a room — show host vs join
+      !hasRoom?h('div',{},
+        h('div',{className:'hint'},
+          h('div',{style:{fontSize:13,fontWeight:600,marginBottom:6}},'How Rooms Work'),
+          h('div',{style:{fontSize:11,color:'var(--tm)',lineHeight:1.5}},'One person (the host) creates a free Supabase project and generates a Room Code. Everyone else enters that code to join — no database setup needed. Once in a room, create your account and pair with brothers.')),
+
+        // JOIN A ROOM
+        h('div',{className:'cd'},
+          h('div',{className:'sb'},'Join a Room'),
+          h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:8,lineHeight:1.4}},'Got a room code from a friend? Paste it here.'),
+          (()=>{const i=inp('','Paste room code...',{style:{marginBottom:8}});return h('div',{},i,h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{const code=i.value.trim();if(!code)return toast('Enter a code');const creds=decodeRoom(code);if(!creds)return toast('Invalid room code');LS.s('room_code',code);LS.s('sb_url',creds.url);LS.s('sb_key',creds.key);toast('Room joined!');initRoom().then(()=>R())}},'Join Room'))})()),
+
+        // HOST A ROOM
+        h('div',{className:'cd'},
+          h('div',{className:'sb'},'Host a Room (Advanced)'),
+          h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:8,lineHeight:1.4}},'Only one person needs to do this. Create a free project at supabase.com, run the setup SQL, then generate a room code for others.'),
+          h('details',{style:{marginBottom:8}},
+            h('summary',{style:{cursor:'pointer',fontSize:11,color:'var(--a)',fontWeight:600}},'Show setup instructions'),
+            h('div',{style:{marginTop:8}},
+              h('div',{className:'lb'},'1. Go to supabase.com → create project'),
+              h('div',{className:'lb',style:{marginTop:6}},'2. SQL Editor → New Query → paste & run:'),
+              h('div',{style:{position:'relative',marginBottom:8,marginTop:4}},
+                h('div',{className:'sql-box'},SQL),
+                h('button',{className:'bt bg bs',style:{position:'absolute',top:6,right:6},onClick:()=>copyText(SQL)},'Copy SQL')),
+              h('div',{className:'lb'},'3. Settings → API → copy your URL & anon key:'),
+              (()=>{const iUrl=inp('','https://xxxxx.supabase.co',{style:{marginBottom:4}});const iKey=inp('','eyJhbG...',{style:{marginBottom:8}});return h('div',{},h('div',{className:'lb',style:{marginTop:4}},'Project URL'),iUrl,h('div',{className:'lb'},'Anon Key'),iKey,h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{const url=iUrl.value.trim(),key=iKey.value.trim();if(!url||!key)return toast('Enter both');const code=encodeRoom(url,key);LS.s('room_code',code);LS.s('sb_url',url);LS.s('sb_key',key);toast('Room created!');initRoom().then(()=>R())}},'Create Room & Generate Code'))})())))):
+
+      // IN A ROOM
+      h('div',{},
+        // Show room code for sharing
+        h('div',{className:'cd',style:{textAlign:'center'}},
+          h('div',{className:'lb'},'Room Code (share with brothers)'),
+          h('div',{className:'room-code',style:{fontSize:11,wordBreak:'break-all'}},LS.g('room_code')||''),
+          h('button',{className:'bt bg bs',style:{marginTop:8},onClick:()=>copyText(LS.g('room_code')||'')},'Copy Room Code')),
+
+        // Auth
+        !isCloud()?h('div',{className:'cd'},
+          h('div',{className:'sb'},'Create Account or Sign In'),
+          h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:8}},'Create your identity in this room.'),
+          U.authErr?h('div',{style:{background:'var(--ad)',color:'var(--a)',padding:'6px 10px',borderRadius:8,fontSize:11,marginBottom:8}},U.authErr):null,
+          h('div',{className:'pl',style:{marginBottom:8}},
+            h('div',{className:U.authMode==='signup'?'on':'',onClick:()=>{U.authMode='signup';U.authErr='';R()}},'Sign Up'),
+            h('div',{className:U.authMode==='signin'?'on':'',onClick:()=>{U.authMode='signin';U.authErr='';R()}},'Sign In')),
+          (()=>{
+            const iE=inp('','Email',{type:'email',style:{marginBottom:6}});
+            const iP=inp('','Password',{type:'password',style:{marginBottom:6}});
+            const iN=U.authMode==='signup'?inp(D.profile.name||'','Display name',{style:{marginBottom:6}}):null;
+            return h('div',{},iE,iP,iN,
+              h('button',{className:'bt',style:{width:'100%',justifyContent:'center',marginTop:4},onClick:async()=>{
+                U.authErr='';U.authLoad=true;R();
+                try{
+                  if(U.authMode==='signup')await cloudSignUp(iE.value,iP.value,iN?iN.value:D.profile.name);
+                  else await cloudSignIn(iE.value,iP.value);
+                  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+                  toast('Signed in! 🔥');
+                }catch(e){U.authErr=e.message||'Auth failed'}
+                U.authLoad=false;R();
+              }},U.authLoad?'Loading...':(U.authMode==='signup'?'Create Account':'Sign In')));
+          })()):
+        // Signed in
+        h('div',{className:'cd'},
+          h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+            h('div',{className:'status-dot',style:{background:'var(--ok)'}}),
+            h('div',{style:{flex:1}},h('div',{style:{fontWeight:600,fontSize:12}},'Signed in as '+(C.cloudProfile?.name||C.user?.email)),h('div',{style:{fontSize:10,color:'var(--tm)'}},C.cloudProfile?.brother_user_id?'Paired with '+(C.cloudProfile.brother_name||'brother'):'No brother paired yet — go to Brotherhood → Connect')),
+            h('button',{className:'bt bg bs',onClick:async()=>{await C.sb.auth.signOut();C.user=null;C.cloudProfile=null;C.cloudMsgs=[];toast('Signed out');R()}},'Out'))),
+
+        // Leave room
+        h('div',{style:{marginTop:8}},h('button',{className:'bt bg bs',style:{color:'#e55'},onClick:()=>{if(confirm('Leave this room? Local data stays.')){LS.d('room_code');LS.d('sb_url');LS.d('sb_key');C.sb=null;C.user=null;C.cloudProfile=null;toast('Left room');R()}}},'Leave Room')))));
+}
+
+// ═══════════════════
+// MODALS (same as v4)
+// ═══════════════════
+function rModal(){
+  const close=()=>{U.modal=null;U.md=null;U.vsQuery='';U.vsResults=null;U.vsLoading=false;R()};
+  const bg=h('div',{className:'modal-bg'});bg.addEventListener('click',e=>{if(e.target===bg)close()});
+  const m=h('div',{className:'modal'});const d=U.md;
+
+  // ── ADD/EDIT VERSE (with Bible API search) ──
+  if(U.modal==='addV'||U.modal==='editV'){
+    const isE=U.modal==='editV';
+
+    // Bible search bar
+    const searchBox=h('div',{className:'cd',style:{background:'var(--ad)',borderColor:'var(--a)',padding:10,marginBottom:10}},
+      h('div',{style:{fontSize:10,fontWeight:600,color:'var(--a)',marginBottom:4}},'🔍 LOOK UP A VERSE'),
+      h('div',{style:{display:'flex',gap:4}},
+        (()=>{const si=inp(U.vsQuery,'Type a reference... e.g. "John 3:16"',{style:{flex:1}});
+          si.addEventListener('input',()=>{U.vsQuery=si.value});
+          si.addEventListener('keydown',async e=>{if(e.key==='Enter'&&si.value.trim()){
+            U.vsLoading=true;R();
+            const res=await bibleSearch(si.value.trim());
+            U.vsLoading=false;
+            if(res){U.vsResults=res;d.reference=res.ref;d.text=res.text.replace(/\n/g,' ').trim();R()}
+            else{toast('Verse not found — try "John 3:16" format');R()}
+          }});return si})(),
+        h('button',{className:'bt bs',onClick:async()=>{
+          if(!U.vsQuery.trim())return;
+          U.vsLoading=true;R();
+          const res=await bibleSearch(U.vsQuery.trim());
+          U.vsLoading=false;
+          if(res){U.vsResults=res;d.reference=res.ref;d.text=res.text.replace(/\n/g,' ').trim();R()}
+          else{toast('Not found');R()}
+        }},U.vsLoading?'...':'Fetch')),
+      U.vsResults?h('div',{style:{marginTop:6,fontSize:10,color:'var(--ok)'}},
+        '✓ Found: '+U.vsResults.ref+' — auto-filled below'):null);
+
+    const iR=inp(d.reference,'e.g. Romans 8:28',{style:{marginBottom:6}});iR.addEventListener('input',()=>{d.reference=iR.value});
+    const iT=ta(d.text,'The verse text...',{style:{marginBottom:6}});iT.addEventListener('input',()=>{d.text=iT.value});
+    const iF=ta(d.reflection||'','What this means to me, when God spoke this to me...',{style:{marginBottom:6}});iF.addEventListener('input',()=>{d.reflection=iF.value});
+
+    m.append(
+      h('div',{className:'modal-title'},h('span',{},(isE?'Edit':'Add')+' Verse'),h('button',{className:'bt bg bs',onClick:close},'✕')),
+      isE?null:searchBox,
+      h('div',{className:'lb'},'Reference'),iR,
+      h('div',{className:'lb'},'Verse Text'),iT,
+      h('div',{className:'lb'},'Your Reflection — How God Spoke to You'),iF,
+      h('div',{className:'lb'},'Category'),
+      h('div',{style:{display:'flex',flexWrap:'wrap',gap:2,marginBottom:6}},...VCATS.map(c=>h('span',{className:'tg'+(d.category===c?' on':''),onClick:()=>{d.category=c;R()}},c))),
+      h('div',{className:'lb'},'Color'),
+      h('div',{style:{display:'flex',gap:6,marginBottom:6}},...VCOLS.map(c=>h('div',{className:'cdot'+(d.color===c?' on':''),style:{background:CHEX[c]},onClick:()=>{d.color=c;R()}}))),
+      h('div',{className:'lb'},'Tags'),
+      h('div',{style:{display:'flex',flexWrap:'wrap',gap:2,marginBottom:10}},...TAGS.map(t=>h('span',{className:'tg'+((d.tags||[]).includes(t)?' on':''),onClick:()=>{d.tags=d.tags||[];d.tags=d.tags.includes(t)?d.tags.filter(x=>x!==t):[...d.tags,t];R()}},t))),
+    );
+    if(isE)m.appendChild(h('div',{style:{display:'flex',gap:4}},
+      h('button',{className:'bt',style:{flex:1,justifyContent:'center'},onClick:()=>{const v=D.verses.find(x=>x.id===d.id);if(v)Object.assign(v,{reference:d.reference,text:d.text,reflection:d.reflection,category:d.category,color:d.color,tags:d.tags,is_pinned:d.is_pinned});save();close()}},'Save'),
+      h('button',{className:'bt bg',onClick:()=>{const v=D.verses.find(x=>x.id===d.id);if(v)v.is_pinned=!v.is_pinned;save();close()}},d.is_pinned?'Unpin':'📌'),
+      h('button',{className:'bt bg',style:{color:'#e55'},onClick:()=>{if(confirm('Delete?')){D.verses=D.verses.filter(x=>x.id!==d.id);save();close()}}},'✕')));
+    else m.appendChild(h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{if(!d.reference)return toast('Enter reference');D.verses.unshift({id:ID(),reference:d.reference,text:d.text,reflection:d.reflection||'',category:d.category,color:d.color,tags:d.tags||[],is_pinned:false});save();close()}},'Add to My Verses'));
+  }
+
+  // ── PLAN TEMPLATES ──
+  else if(U.modal==='templates'){
+    const cats=[...new Set(PLAN_TEMPLATES.map(t=>t.cat))];
+    const fCat=d.filterCat||'';
+    const filtered=fCat?PLAN_TEMPLATES.filter(t=>t.cat===fCat):PLAN_TEMPLATES;
+
+    m.append(
+      h('div',{className:'modal-title'},h('span',{},'Bible Plan Templates'),h('button',{className:'bt bg bs',onClick:close},'✕')),
+      h('div',{style:{fontSize:11,color:'var(--tm)',marginBottom:10,lineHeight:1.4}},'One-tap import. Customize after adding. '+PLAN_TEMPLATES.length+' plans available.'),
+      h('div',{style:{display:'flex',gap:2,flexWrap:'wrap',marginBottom:10}},
+        h('span',{className:'tg'+(!fCat?' on':''),onClick:()=>{d.filterCat='';R()}},'All'),
+        ...cats.map(c=>h('span',{className:'tg'+(fCat===c?' on':''),onClick:()=>{d.filterCat=fCat===c?'':c;R()}},c))),
+      ...filtered.map(t=>h('div',{className:'plan-tmpl',onClick:()=>{
+        const id=ID();
+        D.plans.unshift({id,title:t.title,desc:t.desc,active:false});
+        D.planItems[id]=t.items.map((ref,i)=>({id:ID(),day:i+1,ref,done:false}));
+        save();toast('Added: '+t.title);close();
+      }},
+        h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'start',marginBottom:4}},
+          h('div',{},
+            h('div',{style:{fontWeight:700,fontSize:13}},t.title),
+            h('div',{style:{fontSize:10,color:'var(--tm)',marginTop:1}},t.desc)),
+          h('div',{style:{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:2}},
+            h('span',{className:'plan-tmpl-badge'},t.days+' days'),
+            h('span',{className:'plan-tmpl-badge'},t.cat))),
+        h('div',{style:{fontSize:9,color:'var(--td)',marginTop:4}},
+          t.items.slice(0,3).join(' → ')+(t.items.length>3?' → ...':'')),
+      )),
+    );
+  }
+
+  // ── CREATE CUSTOM PLAN ──
+  else if(U.modal==='addPlan'){
+    const iT=inp(d.title,'"30 Days of Psalms"',{style:{marginBottom:6}});iT.addEventListener('input',()=>{d.title=iT.value});
+    const iD=inp(d.desc,'About this plan...',{style:{marginBottom:6}});iD.addEventListener('input',()=>{d.desc=iD.value});
+    m.append(
+      h('div',{className:'modal-title'},h('span',{},'Create Plan'),h('button',{className:'bt bg bs',onClick:close},'✕')),
+      h('div',{className:'lb'},'Title'),iT,
+      h('div',{className:'lb'},'Description'),iD,
+      h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}},
+        h('div',{className:'lb',style:{marginBottom:0}},'Readings'),
+        h('button',{className:'bt bg bs',onClick:()=>{d.items.push('');R()}},'+ Day')));
+    d.items.forEach((item,i)=>{
+      const ip2=inp(item,'Psalm '+(i+1),{style:{flex:1}});ip2.addEventListener('input',()=>{d.items[i]=ip2.value});
+      m.appendChild(h('div',{style:{display:'flex',gap:3,marginBottom:3}},
+        h('span',{style:{fontSize:9,color:'var(--td)',minWidth:26,lineHeight:'32px'}},'Day '+(i+1)),ip2,
+        d.items.length>1?h('button',{className:'bt bg bs',style:{padding:'3px 6px'},onClick:()=>{d.items.splice(i,1);R()}},'✕'):null));
+    });
+    const bk=ta('','Psalm 1\nPsalm 2\n...');
+    bk.addEventListener('blur',()=>{const l=bk.value.trim().split('\n').filter(Boolean);if(l.length){d.items=l.map(x=>x.trim());R()}});
+    m.append(
+      h('div',{style:{marginTop:4,marginBottom:8}},h('div',{className:'lb'},'Quick Fill (one per line)'),bk),
+      h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{
+        if(!d.title)return toast('Title needed');
+        const items=d.items.filter(x=>x.trim());if(!items.length)return toast('Add readings');
+        const id=ID();D.plans.unshift({id,title:d.title,desc:d.desc,active:false});
+        D.planItems[id]=items.map((r,i)=>({id:ID(),day:i+1,ref:r,done:false}));save();close();
+      }},'Create ('+d.items.filter(x=>x.trim()).length+')'));
+  }
+
+  // ── ADD PLAYLIST ──
+  else if(U.modal==='addPL'){
+    const iU=inp(d.url,'Spotify URL or ID',{style:{marginBottom:6}});iU.addEventListener('input',()=>{d.url=iU.value});
+    const iN=inp(d.name,'Playlist name',{style:{marginBottom:6}});iN.addEventListener('input',()=>{d.name=iN.value});
+    const iD2=inp(d.desc,'Description',{style:{marginBottom:6}});iD2.addEventListener('input',()=>{d.desc=iD2.value});
+    m.append(
+      h('div',{className:'modal-title'},h('span',{},'Add Playlist'),h('button',{className:'bt bg bs',onClick:close},'✕')),
+      h('div',{className:'lb'},'Spotify URL or ID'),iU,
+      h('div',{className:'lb'},'Name'),iN,
+      h('div',{className:'lb'},'Description'),iD2,
+      h('div',{className:'lb'},'Category'),
+      h('div',{style:{display:'flex',flexWrap:'wrap',gap:2,marginBottom:10}},...PLCATS.map(c=>h('span',{className:'tg'+(d.cat===c?' on':''),onClick:()=>{d.cat=c;R()}},c))),
+      h('button',{className:'bt',style:{width:'100%',justifyContent:'center'},onClick:()=>{
+        if(!d.url||!d.name)return toast('URL and name needed');
+        let sid=d.url.trim();const mt=sid.match(/playlist\/([a-zA-Z0-9]+)/);if(mt)sid=mt[1];
+        D.playlists.unshift({id:ID(),name:d.name,spotify_id:sid,description:d.desc,category:d.cat});save();close();
+      }},'Add Playlist'));
+  }
+
+  bg.appendChild(m);return bg;
+}
+
+// ═══════════════════
+// INIT
+// ═══════════════════
+async function initRoom(){
+  const rc=LS.g('room_code');if(!rc)return;
+  const creds=decodeRoom(rc);if(!creds)return;
+  try{C.sb=supabase.createClient(creds.url,creds.key);const{data:{session}}=await C.sb.auth.getSession();if(session){C.user=session.user;await cloudLoad();setupRealtime()}}catch(e){console.warn('Room init:',e)}
+}
+load();
+initRoom().then(()=>R());
+</script>
+</body>
+</html>
