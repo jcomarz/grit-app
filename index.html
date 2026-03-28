@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1A1A1A">
 <title>GR!T — Intense Fellowship</title>
-<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -80,6 +79,13 @@ canvas{display:none}
 </head>
 <body>
 <div id="app"></div>
+<div id="sp-persist" style="position:fixed;bottom:60px;left:0;right:0;z-index:89;display:none;background:var(--s);border-top:1px solid var(--b);border-radius:16px 16px 0 0;padding-bottom:env(safe-area-inset-bottom,0)">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px 0">
+    <div id="sp-title" style="font-weight:600;font-size:12px;font-family:'DM Sans',sans-serif"></div>
+    <button id="sp-min" style="background:0;border:1px solid var(--b);color:var(--tm);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Minimize</button>
+  </div>
+  <div id="sp-frame" style="padding:4px 6px 6px"></div>
+</div>
 <canvas id="vc" width="1080" height="1080"></canvas>
 <script>
 // ═══════════════════
@@ -330,14 +336,13 @@ function R(){
   const pg=h('div',{className:'pg',style:U.mp?{paddingBottom:'120px'}:{}},h('div',{className:'pi'},tabs[U.tab]()));
   const navI=[{id:'home',l:'Home',i:'home'},{id:'word',l:'Word',i:'auto_stories'},{id:'journal',l:'Journal',i:'edit_note'},{id:'music',l:'Worship',i:'music_note'},{id:'brother',l:'Brother',i:'group'},{id:'settings',l:'Settings',i:'tune'}];
   const nav=h('nav',{},...navI.map(t=>{
-    const b=h('button',{className:t.id===U.tab?'act':'',onClick:()=>{U.tab=t.id;R()}},mi(t.i),h('span',{},t.l));
+    const b=h('button',{className:t.id===U.tab?'act':'',onClick:()=>{U.tab=t.id;U.mpExpand=false;spSync();R()}},mi(t.i),h('span',{},t.l));
     if(t.id==='brother'&&isCloud()&&C.cloudMsgs.filter(m=>m.recipient_id===C.user?.id&&m.msg_type==='nudge').length>0){/* badge could go here */}
     return b;
   }));
   const shell=h('div',{style:{height:'100%',display:'flex',flexDirection:'column',overflow:'hidden'}},pg,nav);
   app.appendChild(shell);
   if(U.mp)app.appendChild(rMiniPlayer());
-  if(U.mp&&U.mpExpand)app.appendChild(rExpandedPlayer());
   if(U.modal)app.appendChild(rModal());
   requestAnimationFrame(()=>{const ml=document.getElementById('msgL');if(ml)ml.scrollTop=ml.scrollHeight});
 }
@@ -382,27 +387,40 @@ function rHome(){
 function rCal(){const y=U.calY,m=U.calM,fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),mn=new Date(y,m).toLocaleDateString('en-US',{month:'long',year:'numeric'});const cells=[];for(let i=0;i<fd;i++)cells.push(null);for(let i=1;i<=dim;i++)cells.push(i);const gdd=day=>{if(!day)return null;const k=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;const j=D.journals[k],c=D.checks[k];return{k,j,c,hj:j&&(j.did_well||j.missed||j.tomorrow),cn:c?[c.morning,c.midday,c.evening].filter(Boolean).length:0}};const sel=U.calSel?gdd(U.calSel):null;return h('div',{className:'cd fu',style:{marginBottom:8}},h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}},h('button',{className:'bt bg bs',onClick:()=>{U.calM--;if(U.calM<0){U.calM=11;U.calY--}U.calSel=null;R()}},mi('chevron_left',16)),h('div',{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:17}},mn),h('button',{className:'bt bg bs',onClick:()=>{U.calM++;if(U.calM>11){U.calM=0;U.calY++}U.calSel=null;R()}},mi('chevron_right',16))),h('div',{className:'cg',style:{marginBottom:3}},...'SMTWTFS'.split('').map(d=>h('div',{style:{textAlign:'center',fontSize:9,fontWeight:600,color:'var(--td)'}},d))),h('div',{className:'cg',style:{marginBottom:6}},...cells.map(day=>{if(!day)return h('div',{});const dd=gdd(day),isTd=dd.k===TD(),isSl=U.calSel===day;return h('div',{className:'cc'+(isTd&&!isSl?' today':'')+(isSl?' sel':''),onClick:()=>{U.calSel=day;R()}},h('span',{style:{fontWeight:isTd?'700':'400',fontSize:'11px'}},''+day),(dd.hj||dd.cn>0)?h('div',{style:{display:'flex',gap:'1px',marginTop:'1px'}},dd.cn>0?h('span',{style:{width:'3px',height:'3px',borderRadius:'50%',background:dd.cn===3?'var(--ok)':'var(--w)'}}):null,dd.hj?h('span',{style:{width:'3px',height:'3px',borderRadius:'50%',background:'var(--a)'}}):null):null)})),sel?h('div',{className:'fu',style:{borderTop:'1px solid var(--b)',paddingTop:6}},h('div',{style:{fontSize:11,fontWeight:600,marginBottom:4}},new Date(sel.k+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})),sel.hj?h('div',{style:{fontSize:10}},sel.j.did_well?h('div',{},h('span',{style:{color:'var(--ok)'}},'✓ '),sel.j.did_well):null):h('div',{style:{fontSize:10,color:'var(--td)'}},'No entry')):null)}
 
 // ═══════════════════
-// MINI-PLAYER (persistent across tabs)
+// MINI-PLAYER (persistent iframe lives outside #app)
 // ═══════════════════
-function playPlaylist(sid,name,cat){U.mp=sid;U.mpName=name;U.mpCat=cat||'';U.mpExpand=false;R()}
+let _spId=null;
+
+function playPlaylist(sid,name,cat){
+  U.mp=sid;U.mpName=name;U.mpCat=cat||'';U.mpExpand=false;
+  if(_spId!==sid){
+    _spId=sid;
+    document.getElementById('sp-frame').innerHTML=
+      `<iframe src="https://open.spotify.com/embed/playlist/${sid}?theme=0" width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px"></iframe>`;
+  }
+  document.getElementById('sp-title').textContent=name;
+  spSync();R();
+}
+function stopPlaylist(){
+  U.mp=null;U.mpExpand=false;_spId=null;
+  document.getElementById('sp-frame').innerHTML='';
+  spSync();R();
+}
+function spSync(){
+  document.getElementById('sp-persist').style.display=(U.mp&&U.mpExpand)?'block':'none';
+}
+document.getElementById('sp-min').onclick=()=>{U.mpExpand=false;spSync();R()};
+
 function rMiniPlayer(){
   if(U.mpExpand)return h('div',{});
   return h('div',{className:'mini-player'},
     h('div',{className:'mp-bar'},
-      h('div',{className:'mp-art',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},mi('music_note',18)),
-      h('div',{className:'mp-info',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},
+      h('div',{className:'mp-art',onClick:()=>{U.mpExpand=true;spSync();R()}},mi('music_note',18)),
+      h('div',{className:'mp-info',onClick:()=>{U.mpExpand=true;spSync();R()}},
         h('div',{className:'mp-name'},U.mpName||'Now Playing'),
         h('div',{className:'mp-cat'},U.mpCat||'Worship')),
-      h('button',{className:'bt bg bs',onClick:()=>{U.mpExpand=!U.mpExpand;R()}},mi(U.mpExpand?'expand_more':'expand_less',16)),
-      h('button',{className:'bt bg bs',style:{marginLeft:2},onClick:()=>{U.mp=null;U.mpExpand=false;R()}},mi('close',14))));
-}
-function rExpandedPlayer(){
-  if(!U.mp)return h('div',{});
-  return h('div',{className:'mp-expand'+(U.mpExpand?'':' hidden')},
-    h('div',{style:{padding:'8px 12px 4px',display:'flex',justifyContent:'space-between',alignItems:'center'}},
-      h('div',{style:{fontWeight:600,fontSize:12}},U.mpName),
-      h('button',{className:'bt bg bs',onClick:()=>{U.mpExpand=false;R()}},'Minimize')),
-    h('div',{style:{padding:'0 6px 6px'},html:`<iframe src="https://open.spotify.com/embed/playlist/${U.mp}?theme=0" width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px"></iframe>`}));
+      h('button',{className:'bt bg bs',onClick:()=>{U.mpExpand=true;spSync();R()}},mi('expand_less',16)),
+      h('button',{className:'bt bg bs',style:{marginLeft:2},onClick:()=>stopPlaylist()},mi('close',14))));
 }
 
 // Word, Journal, Music tabs (same as v4 — keeping compact)
@@ -424,7 +442,7 @@ function rLib(){const filt=BUILT_IN.filter(v=>{if(U.wPil&&v.pillar!==U.wPil)retu
 function rJournal(){const date=U.jDate,entry=D.journals[date]||{},tags=entry.tags||[],isW=U.jView==='write';const allE=Object.entries(D.journals).sort(([a],[b])=>b.localeCompare(a)).filter(([k,v])=>{if(U.jTag&&!(v.tags||[]).includes(U.jTag))return false;if(U.jSrch){const s=U.jSrch.toLowerCase();return(v.did_well||'').toLowerCase().includes(s)||(v.missed||'').toLowerCase().includes(s)||(v.tomorrow||'').toLowerCase().includes(s)}return true});const uf=(f,val)=>{if(!D.journals[date])D.journals[date]={tags:[]};D.journals[date][f]=val;save()};const tt=tag=>{if(!D.journals[date])D.journals[date]={tags:[]};if(!D.journals[date].tags)D.journals[date].tags=[];const c=D.journals[date].tags;D.journals[date].tags=c.includes(tag)?c.filter(x=>x!==tag):[...c,tag];save();R()};const mkTA=(f,v,p)=>{const t=ta(v,p);t.addEventListener('blur',()=>uf(f,t.value));return t};
   return h('div',{},h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}},h('div',{className:'st',style:{marginBottom:0}},'Journal'),h('div',{className:'pl',style:{width:'130px',marginBottom:0}},h('div',{className:isW?'on':'',onClick:()=>{U.jView='write';R()}},'Write'),h('div',{className:!isW?'on':'',onClick:()=>{U.jView='browse';R()}},'Browse'))),isW?h('div',{className:'fu'},(()=>{const i=inp(date,'',{type:'date',style:{textAlign:'center',marginBottom:8}});i.addEventListener('change',()=>{U.jDate=i.value;R()});return i})(),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--ok)',marginBottom:3}},'✓ What did I do well?'),mkTA('did_well',entry.did_well,'Wins...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--w)',marginBottom:3}},'✗ Where did I miss?'),mkTA('missed',entry.missed,'Honest...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--a)',marginBottom:3}},'→ Tomorrow needs?'),mkTA('tomorrow',entry.tomorrow,'Intention...')),h('div',{className:'cd'},h('div',{style:{fontSize:10,fontWeight:600,color:'var(--tm)',marginBottom:4}},'Tags'),h('div',{style:{display:'flex',flexWrap:'wrap',gap:2}},...TAGS.map(t=>h('span',{className:'tg'+(tags.includes(t)?' on':''),onClick:()=>tt(t)},t)))),entry.did_well||entry.missed?h('button',{className:'bt bg bs',style:{marginTop:4},onClick:()=>copyText(shareableJournal(date))},mi('content_copy',12),' Copy as shareable text'):null):h('div',{className:'fu'},(()=>{const si=inp(U.jSrch,'Search...',{style:{paddingLeft:28}});si.addEventListener('input',()=>{U.jSrch=si.value;R()});return h('div',{style:{display:'flex',gap:6,marginBottom:8}},h('div',{style:{flex:1,position:'relative'}},si))})(),allE.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},'No entries'):h('div',{},...allE.map(([k,v])=>h('div',{className:'cd',style:{cursor:'pointer'},onClick:()=>{U.jDate=k;U.jView='write';R()}},h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:2}},h('div',{style:{fontSize:11,fontWeight:600}},new Date(k+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}))),v.did_well?h('div',{style:{fontSize:10,color:'var(--tm)'}},'✓ '+(v.did_well||'').slice(0,60)):null)))))}
 function rMusic(){return h('div',{},h('div',{className:'st'},'Worship'),h('div',{className:'pl'},h('div',{className:U.mSub==='playlists'?'on':'',onClick:()=>{U.mSub='playlists';R()}},'My Playlists'),h('div',{className:U.mSub!=='playlists'?'on':'',onClick:()=>{U.mSub='discover';R()}},'Discover')),h('button',{className:'bt',style:{marginBottom:10},onClick:()=>{U.modal='addPL';U.md={name:'',url:'',desc:'',cat:'worship'};R()}},mi('add',14),' Add Playlist'),U.mSub==='playlists'?(D.playlists.length===0?h('div',{style:{textAlign:'center',padding:28,color:'var(--td)'}},'🎵 Add your own Spotify playlists.'):h('div',{},...D.playlists.map(p=>rPC(p,1)))):h('div',{},...DEFPL.map(p=>rPC(p,0))))}
-function rPC(pl,c){const sid=pl.spotify_id||pl.sid;const isPlaying=U.mp===sid;return h('div',{style:{marginBottom:6}},h('div',{className:'cd',style:{cursor:'pointer',display:'flex',alignItems:'center',gap:8,borderColor:isPlaying?'var(--a)':'var(--b)',background:isPlaying?'var(--ad)':'var(--s)'},onClick:()=>{if(isPlaying){U.mpExpand=!U.mpExpand;R()}else{playPlaylist(sid,pl.name,pl.description||pl.desc||pl.cat||'')}}},h('div',{style:{width:32,height:32,borderRadius:6,background:isPlaying?'var(--a)':'var(--ad)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,color:isPlaying?'#fff':'var(--a)'}},mi(isPlaying?'equalizer':'play_arrow',16)),h('div',{style:{flex:1}},h('div',{style:{fontWeight:600,fontSize:11}},pl.name),h('div',{style:{fontSize:9,color:'var(--tm)'}},pl.description||pl.desc||'')),isPlaying?h('span',{style:{fontSize:9,color:'var(--a)',fontWeight:600}},'PLAYING'):null,c?h('button',{className:'bt bg bs',style:{color:'#e55'},onClick:e=>{e.stopPropagation();D.playlists=D.playlists.filter(x=>x.id!==pl.id);save();R()}},'✕'):null))}
+function rPC(pl,c){const sid=pl.spotify_id||pl.sid;const isPlaying=U.mp===sid;return h('div',{style:{marginBottom:6}},h('div',{className:'cd',style:{cursor:'pointer',display:'flex',alignItems:'center',gap:8,borderColor:isPlaying?'var(--a)':'var(--b)',background:isPlaying?'var(--ad)':'var(--s)'},onClick:()=>{if(isPlaying){U.mpExpand=true;spSync();R()}else{playPlaylist(sid,pl.name,pl.description||pl.desc||pl.cat||'')}}},h('div',{style:{width:32,height:32,borderRadius:6,background:isPlaying?'var(--a)':'var(--ad)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,color:isPlaying?'#fff':'var(--a)'}},mi(isPlaying?'equalizer':'play_arrow',16)),h('div',{style:{flex:1}},h('div',{style:{fontWeight:600,fontSize:11}},pl.name),h('div',{style:{fontSize:9,color:'var(--tm)'}},pl.description||pl.desc||'')),isPlaying?h('span',{style:{fontSize:9,color:'var(--a)',fontWeight:600}},'NOW PLAYING'):null,c?h('button',{className:'bt bg bs',style:{color:'#e55'},onClick:e=>{e.stopPropagation();if(isPlaying)stopPlaylist();D.playlists=D.playlists.filter(x=>x.id!==pl.id);save();R()}},'✕'):null))}
 
 // ═══════════════════
 // BROTHERHOOD (context-aware)
